@@ -19,6 +19,7 @@ import {
   TabPanels,
   Tabs,
   Icon,
+  Input,
 } from "@chakra-ui/react";
 
 import LayoutMob from "../components/Layouts/layoutMobile";
@@ -29,6 +30,7 @@ import { BsPencilSquare, BsStack } from "react-icons/bs";
 import { TfiStatsDown, TfiStatsUp, TfiClipboard } from "react-icons/tfi";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import { useAuth } from "../contexts/AuthContext";
+import useScanDetection from "use-scan-detection";
 
 // import { Chart, ArcElement } from "chart.js";
 
@@ -44,6 +46,7 @@ export default function Home() {
   const { isOpen: isOpenTotal, onToggle: onToggleTotal } = useDisclosure();
 
   const [teste, setTeste] = useState(300);
+  const [test, setTest] = useState();
 
   const isWideVersion = useBreakpointValue({
     base: true,
@@ -260,6 +263,7 @@ export default function Home() {
         </>
       ) : (
         <LayoutDesk>
+          <Input />
           AQUI SERÁ O DESKTOP
           {/* <Flex direction="column">
             <Button w="100%" mb="2rem" color="red" onClick={onToggle}>
