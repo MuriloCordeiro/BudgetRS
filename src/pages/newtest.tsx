@@ -7,7 +7,6 @@ import {
   Text,
   useDisclosure,
   useToast,
-  Textarea,
 } from "@chakra-ui/react";
 import useScanDetection from "use-scan-detection";
 import {
@@ -28,18 +27,14 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-
+import KeyPressButton from "../services/test";
 import ReactToPrint from "react-to-print";
-// import myFunction from "../utils";
+
 export default function Scanner() {
   const [barcodeScan, setBarcodeScan] = useState<any>("");
   const [verifyTest, setVerifyTest] = useState<Boolean>();
   const [test, setTest] = useState<any>();
   const [errorCode, setErrorCode] = useState();
-
-  // function testing() {
-  //   myFunction();
-  // }
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -96,46 +91,11 @@ export default function Scanner() {
     console.log("Esse é o código de error", errorCode);
   }
 
-  // const handleButtonClick = () => {
-  //   const event = new KeyboardEvent("keydown", {
-  //     ctrlKey: true,
-  //     shiftKey: true,
-  //     code: "80",
-  //   });
-
-  //   window.dispatchEvent(event);
-
-  //   console.log("event", event);
-  // };
-  // useEffect(() => {
-  //   if (verifyTest === true) {
-  //     toast({
-  //       title: "Verificação Iniciada.",
-  //       description: "Você já pode usar o Scanner.",
-  //       status: "success",
-  //       duration: 9000,
-  //       isClosable: true,
-  //     });
-  //   } else {
-  //     toast({
-  //       title: "Verificação Encerrada.",
-  //       description: "O scanner foi desabilitado.",
-  //       status: "error",
-  //       duration: 9000,
-  //       isClosable: true,
-  //     });
-  //   }
-  // }, [toast, verifyTest]);
-
-  function fetchScanner() {
-    fetch("https://localhost:5001/ExpeditionScannerAPI");
-  }
   return (
     <>
       {/* <Flex p="2rem">teste:{barcodeScan}</Flex>
       <Button mt="10rem">teste</Button> */}
 
-      <Button onClick={() => fetchScanner()}>Olá</Button>
       <Flex p="2rem" direction="column">
         <Flex>Esse é o código correto: {barcodeScan}</Flex>
         <Flex w="80%" mt="5rem" justify="space-evenly">
@@ -147,11 +107,10 @@ export default function Scanner() {
             }}
             value={test}
           />
-          {/* <Button onClick={testing}>teste</Button> */}
-
+          <KeyPressButton keyCode={70} label="Enter" />
+          <KeyPressButton keyCode={27} label="Esc" />
           <Input mr="1rem" placeholder="Separador" />
           <Input mr="1rem" placeholder="Conferente" />
-
           <Button
             mr="1rem"
             w="full"
