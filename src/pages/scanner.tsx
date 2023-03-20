@@ -1,5 +1,5 @@
-// import Lottie from "react-lottie";
 import { useState, useEffect, useRef } from "react";
+import useScanDetection from "use-scan-detection";
 import {
   Button,
   Flex,
@@ -7,18 +7,12 @@ import {
   Text,
   useDisclosure,
   useToast,
-  Textarea,
-} from "@chakra-ui/react";
-import useScanDetection from "use-scan-detection";
-import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   Modal,
   ModalOverlay,
@@ -26,18 +20,23 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  Image,
+  Box,
   ModalCloseButton,
 } from "@chakra-ui/react";
 
+import { PrintModal } from "../components/ModalAlert";
 import ReactToPrint from "react-to-print";
-// import myFunction from "../utils";
+
 export default function Scanner() {
   const [barcodeScan, setBarcodeScan] = useState<any>(
     "Nenhum código de barra escaneado"
   );
   const [verifyScanner, setVerifyScanner] = useState<Boolean>();
-  const [errorMessage, setErrorMessage] = useState<any>();
-
+  const [errorMessage, setErrorMessage] = useState<any>(false);
+  const [eanError, setEanError] = useState<string>();
+  const [qtd, setQtd] = useState<any>();
+  const [checked, setChecked] = useState<any>();
   const [mock, setMock] = useState([
     {
       itens: "185/65R15 88H OUTRUN M2 MOMO",
@@ -57,15 +56,15 @@ export default function Scanner() {
       QTD: 10,
       CONFERIDO: 0,
     },
-    {
-      itens: "185/65R14 86T F600 FIRESTONE",
-      end1: "1A-2D",
-      end2: "1A-2D",
-      end3: "1A-2D",
-      EAN: "1189189600024300092508900020002",
-      QTD: 10,
-      CONFERIDO: 0,
-    },
+    // {
+    //   itens: "185/65R14 86T F600 FIRESTONE",
+    //   end1: "1A-2D",
+    //   end2: "1A-2D",
+    //   end3: "1A-2D",
+    //   EAN: "1189189600024300092508900020002",
+    //   QTD: 10,
+    //   CONFERIDO: 0,
+    // },
   ]);
 
   const toast = useToast({
@@ -77,10 +76,13 @@ export default function Scanner() {
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenError,
+    onOpen: onOpenError,
+    onClose: onCloseError,
+  } = useDisclosure();
 
-  const componentRef = useRef<any>();
-
-  function encontraDadoParecido() {
+  function handleScanner() {
     const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
 
     const result = mock.some(checkEAN);
@@ -89,10 +91,15 @@ export default function Scanner() {
       const mappedMock = mock?.map((prod) => {
         if (prod?.EAN === barcodeScan) {
           setBarcodeScan(null);
+
           if (prod?.EAN === barcodeScan && prod?.CONFERIDO + 1 > prod?.QTD) {
-            console.log("deu errado pq o conferido ta maior");
+            setErrorMessage(true);
+            setEanError(prod?.EAN);
+            setQtd(prod?.QTD);
+            setChecked(prod?.CONFERIDO + 1);
             setVerifyScanner(false);
-            fetch("https://localhost:5001/ExpeditionScannerAPI");
+            // fetch("https://localhost:5001/ExpeditionScannerAPI");
+
             return prod;
           } else {
             return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
@@ -105,57 +112,16 @@ export default function Scanner() {
       setMock(mappedMock);
     } else if (verifyScanner === true) {
       setBarcodeScan(null);
-      fetch("https://localhost:5001/ExpeditionScannerAPI");
+      // fetch("https://localhost:5001/ExpeditionScannerAPI");
     }
   }
 
   useEffect(() => {
     if (barcodeScan !== null) {
-      encontraDadoParecido();
+      handleScanner();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [barcodeScan]);
-
-  // const mappedMock = mock?.map((prod)=>{
-  //   if (prod?.EAN === barcodeScan){
-  //     return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
-  //   } else {
-  //       return prod;
-  //   }
-  // })
-
-  //     const mappedMock = mock?.map((prod) => {
-
-  //       if (prod?.EAN === barcodeScan) {
-  //       } else {
-  //           if (prod?.CONFERIDO > prod?.QTD) {
-  //             // fetch("https://localhost:5001/ExpeditionScannerAPI");
-  //             console.log(
-  //               `Item: ${prod?.EAN}, CONFERIDO: ${prod?.CONFERIDO + 1} de ${
-  //                 prod?.QTD
-  //               }`
-  //             );
-  //           return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
-  //         }
-  //       } else if (verifyScanner === true && prod?.EAN !== barcodeScan) {
-  //         console.log("QTD do item máximo");
-  //         fetch("https://localhost:5001/ExpeditionScannerAPI");
-
-  //         setIsOpenError(true);
-  //         setErrorMessage("QTD do item máximo");
-  //         handlePlayError();
-  //       }
-  //       return prod;
-  //     });
-  //   } else if (verifyScanner === true && result === false) {
-  //     fetch("https://localhost:5001/ExpeditionScannerAPI");
-  //     console.log("EAN não existe", result);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   encontraDadoParecido();
-  // }, [barcodeScan]);
 
   if (typeof window !== "undefined") {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -163,13 +129,11 @@ export default function Scanner() {
       onComplete: (barcode): any => {
         if (verifyScanner === true) {
           setBarcodeScan(barcode.trim());
+          console.log("barcode", barcode);
         } else {
           setBarcodeScan("Nenhum código válido escaneado");
         }
-        // encontraDadoParecido();
-        // ? : setBarcodeScan("");
       },
-      // onError: setErrorCode,
       preventDefault: false,
       minLength: 13,
       stopPropagation: true,
@@ -193,23 +157,54 @@ export default function Scanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verifyScanner]);
 
-  // useEffect(() => {
-  //   if (barcodeScan.trim(" ") !== "1189189600024300092462600020004") {
-  //     fetch("https://localhost:5001/ExpeditionScannerAPI");
-  //   }
-  // }, [barcodeScan]);
-  // function fetchScanner() {}
+  const componentRef = useRef<any>();
+
+  const PrintMock = [
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+  ];
+
   return (
     <>
-      {/* <Flex p="2rem">teste:{barcodeScan}</Flex>
-      <Button mt="10rem">teste</Button> */}
-
-      {/* <Button onClick={() => fetchScanner()}>Olá</Button> */}
       <Flex p="2rem" direction="column">
-        <Flex>Esse é o código correto: {barcodeScan}</Flex>
-        <Flex w="80%" mt="5rem" justify="space-evenly">
+        <Flex align="start" direction="column">
+          <Image alt="Logo da RS" src={"/RS.png"} />
+
+          <Box
+            borderBottomWidth="2px"
+            mt="1rem"
+            w="100%"
+            borderColor="gray.200"
+          />
+        </Flex>
+        {/* <Button onClick={() => fetch("http://localhost:3333/soap")}>
+          Buscar soap
+        </Button> */}
+        <Flex w="80%" mt="3rem" justify="space-evenly">
           <Input mr="1rem" placeholder="Número do pedido" />
-          {/* <Button onClick={encontraDadoParecido}>Comparar</Button> */}
 
           <Input mr="1rem" placeholder="Separador" />
           <Input mr="1rem" placeholder="Conferente" />
@@ -289,7 +284,7 @@ export default function Scanner() {
             <Button mr="1rem" bgColor="#ABB4BD" color="white">
               Reiniciar Conferências
             </Button>
-            <Button mr="1rem" bgColor="#F9B000" color="white">
+            <Button mr="1rem" bgColor="#F9B000" color="white" onClick={onOpen}>
               Imprimir Itens Pendentes
             </Button>
           </Flex>
@@ -298,7 +293,8 @@ export default function Scanner() {
           </Button>
         </Flex>
       </Flex>
-      <Button onClick={onOpen}>Open Modal</Button>
+
+      {/* <PrintModal isOpen={isOpen} onClose={onClose} /> */}
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -318,81 +314,39 @@ export default function Scanner() {
           <ModalBody>
             <Flex
               ref={componentRef}
-              borderWidth="1px"
-              w="400px"
-              h="600px"
               p="1rem"
-              align="center"
+              w="100%"
+              h="100%"
+              // borderWidth="2px"
               direction="column"
             >
-              <Flex
-                mb="1rem"
-                borderColor="gray"
-                borderWidth="2px"
-                w="195px"
-                h="140px"
-                p="0.5rem"
-                direction="column"
-              >
-                <Flex>
-                  <Text fontSize="26px">Barcode: </Text>
-                  <Text fontSize="26px" fontWeight="bold">
-                    {barcodeScan}
-                  </Text>
+              {PrintMock.map((order, index) => (
+                <Flex
+                  key={index}
+                  borderColor="gray"
+                  w="full"
+                  direction="column"
+                  align="center"
+                  mb="1.5rem"
+                >
+                  <Flex>
+                    <Text fontSize="22px">
+                      Pedido: <b>{order.pedido}</b>
+                    </Text>
+                    {/* <Text fontSize="12px" fontWeight="bold">
+                    </Text> */}
+                  </Flex>
+                  <Flex>
+                    <Text fontSize="22px">{order.transportadora}</Text>
+                  </Flex>
+                  <Flex>
+                    <Text fontSize="22px">Volume:</Text>
+                    <Text fontSize="22px" fontWeight="bold">
+                      {order.volume}
+                    </Text>
+                  </Flex>
                 </Flex>
-                <Flex>
-                  <Text fontSize="26px">Translovato</Text>
-                </Flex>
-                <Flex>
-                  <Text fontSize="26px">Volume:</Text>
-                  <Text fontSize="26px" fontWeight="bold">
-                    01/126
-                  </Text>
-                </Flex>
-              </Flex>
-              <Flex
-                borderColor="gray"
-                borderWidth="2px"
-                w="195px"
-                h="140px"
-                p="0.5rem"
-                direction="column"
-                mb="1rem"
-              >
-                <Flex>
-                  <Text fontSize="26px">Pedido:</Text>
-                  <Text fontSize="26px" fontWeight="bold">
-                    1057
-                  </Text>
-                </Flex>
-                <Flex>
-                  <Text fontSize="26px">Translovato</Text>
-                </Flex>
-                <Flex>
-                  <Text fontSize="26px">Volume:</Text>
-                  <Text fontSize="26px" fontWeight="bold">
-                    01/126
-                  </Text>
-                </Flex>
-              </Flex>
-              <Flex
-                bgColor="black"
-                borderColor="gray"
-                borderWidth="2px"
-                w="195px"
-                h="140px"
-                p="0.5rem"
-                direction="column"
-                align="center"
-              >
-                <Text fontSize="36px" color="white">
-                  Pedido
-                </Text>
-
-                <Text fontSize="36px" fontWeight="bold" color="white">
-                  1057
-                </Text>
-              </Flex>
+              ))}
             </Flex>
           </ModalBody>
 
@@ -401,6 +355,38 @@ export default function Scanner() {
               Close
             </Button>
             <Button variant="ghost">Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={errorMessage} onClose={onCloseError} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Erro! - {eanError}
+            <Flex ml="20%"></Flex>
+          </ModalHeader>
+
+          <ModalBody>
+            <Flex direction="column">
+              <Text mb="1rem" fontSize="18px">
+                Você escaneou <b>{checked}</b> itens, porém a quantidade correta
+                é <b>{qtd}</b>. Por favor, verifique novamente e tente escanear
+                a quantidade de itens correta.
+              </Text>
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              mr={3}
+              onClick={() => {
+                setErrorMessage(false);
+              }}
+            >
+              Fechar
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
