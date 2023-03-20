@@ -1,497 +1,395 @@
+import { useState, useEffect, useRef } from "react";
+import useScanDetection from "use-scan-detection";
 import {
-  Flex,
   Button,
-  Text,
-  useBreakpointValue,
+  Flex,
   Input,
-  InputGroup,
-  InputLeftAddon,
-  InputLeftElement,
-  InputRightElement,
-  Stack,
-  Image,
-  useToast,
+  Text,
   useDisclosure,
-  Toast,
-  IconButton,
-  Icon,
+  useToast,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Image,
   Box,
+  ModalCloseButton,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import LayoutDesk from "../components/Layouts/layoutDesktop";
-// import Lottie from "react-lottie";
-import animationData from "../animations/login.json";
-import { useAuth } from "../contexts/AuthContext";
-import { AiOutlineUser, AiOutlineEyeInvisible } from "react-icons/ai";
-import { BsShieldLock } from "react-icons/bs";
-import { FcGoogle } from "react-icons/fc";
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  User,
-} from "firebase/auth";
-import { auth } from "../services/firebase";
-import { useState } from "react";
 
-import SignUp from "../components/SignUp";
-import { parseCookies } from "nookies";
+import { PrintModal } from "../components/ModalAlert";
+import ReactToPrint from "react-to-print";
 
-import {
-  MotionFlex,
-  animationFlex,
-  itemAnimation,
-  InputMotion,
-  inputAnimation,
-} from "../../styles/animation";
-export default function HomeLogin() {
-  const toast = useToast({
-    duration: 5000,
-    isClosable: true,
-  });
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>();
-
-  const isMobileVersion = useBreakpointValue({
-    base: true,
-    sm: true,
-    md: false,
-    lg: false,
-  });
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
+export default function Scanner() {
+  const [barcodeScan, setBarcodeScan] = useState<any>(
+    "Nenhum código de barra escaneado"
+  );
+  const [verifyScanner, setVerifyScanner] = useState<Boolean>();
+  const [errorMessage, setErrorMessage] = useState<any>(false);
+  const [eanError, setEanError] = useState<string>();
+  const [qtd, setQtd] = useState<any>();
+  const [checked, setChecked] = useState<any>();
+  const [mock, setMock] = useState([
+    {
+      itens: "185/65R15 88H OUTRUN M2 MOMO",
+      end1: "1A-2D",
+      end2: "3A-A",
+      end3: "3A-A",
+      EAN: "1189189600024300092462600020004",
+      QTD: 5,
+      CONFERIDO: 0,
     },
-  };
-  const { user, signInWithGoogle, signInEmailPassword, isAuthenticated } =
-    useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+    {
+      itens: "185/65R14 86T F600 FIRESTONE",
+      end1: "1A-2D",
+      end2: "1A-2D",
+      end3: "1A-2D",
+      EAN: "1189189600024300092508900020002",
+      QTD: 10,
+      CONFERIDO: 0,
+    },
+    // {
+    //   itens: "185/65R14 86T F600 FIRESTONE",
+    //   end1: "1A-2D",
+    //   end2: "1A-2D",
+    //   end3: "1A-2D",
+    //   EAN: "1189189600024300092508900020002",
+    //   QTD: 10,
+    //   CONFERIDO: 0,
+    // },
+  ]);
 
-  const Toast = useToast({
-    position: "bottom",
+  const toast = useToast({
+    duration: 1500,
     isClosable: true,
-    duration: 2500,
     containerStyle: {
       color: "white",
     },
   });
 
-  const CLIENT_TOKEN: any = process.env.NEXT_PUBLIC_CLIENT_TOKEN;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenError,
+    onOpen: onOpenError,
+    onClose: onCloseError,
+  } = useDisclosure();
 
-  const cookies = parseCookies();
+  function handleScanner() {
+    const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
 
-  const userToken = cookies[CLIENT_TOKEN];
+    const result = mock.some(checkEAN);
 
-  async function handleLogin(email: string, password: string) {
-    await signInEmailPassword(email, password);
+    if (verifyScanner === true && result === true) {
+      const mappedMock = mock?.map((prod) => {
+        if (prod?.EAN === barcodeScan) {
+          setBarcodeScan(null);
 
-    console.log("isLoading", loading);
+          if (prod?.EAN === barcodeScan && prod?.CONFERIDO + 1 > prod?.QTD) {
+            setErrorMessage(true);
+            setEanError(prod?.EAN);
+            setQtd(prod?.QTD);
+            setChecked(prod?.CONFERIDO + 1);
+            setVerifyScanner(false);
+            // fetch("https://localhost:5001/ExpeditionScannerAPI");
 
-    if (email == "" || null) {
-      setLoading(true);
-
-      toast.closeAll();
-      toast({
-        title: "Verifique o e-mail",
-        description: "O campo de e-mail esta vazio.",
-        status: "error",
+            return prod;
+          } else {
+            return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
+          }
+        } else {
+          setBarcodeScan(null);
+          return prod;
+        }
       });
-      setLoading(false);
-    } else if (password == "" || null) {
-      setLoading(true);
-      toast.closeAll();
-      toast({
-        title: "Verifique a senha.",
-        description: "O campo de senha esta vazio.",
-        status: "error",
-      });
-      setLoading(false);
-    } else {
-      setLoading(true);
-      const response = await signInEmailPassword(email, password);
-      if (response !== undefined) {
-        toast.closeAll();
-        toast({
-          title: "Dados inválidos",
-          description: "Email ou senha incorretos",
-          status: "error",
-        });
-      } else {
-        toast.closeAll();
-        toast({
-          title: "Login realizado com sucesso",
-          description: "Bem-vindo à Dashboard da Pneufree!",
-          status: "success",
-        });
-      }
-      setLoading(false);
+      setMock(mappedMock);
+    } else if (verifyScanner === true) {
+      setBarcodeScan(null);
+      // fetch("https://localhost:5001/ExpeditionScannerAPI");
     }
   }
 
+  useEffect(() => {
+    if (barcodeScan !== null) {
+      handleScanner();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [barcodeScan]);
+
+  if (typeof window !== "undefined") {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useScanDetection({
+      onComplete: (barcode): any => {
+        if (verifyScanner === true) {
+          setBarcodeScan(barcode.trim());
+          console.log("barcode", barcode);
+        } else {
+          setBarcodeScan("Nenhum código válido escaneado");
+        }
+      },
+      preventDefault: false,
+      minLength: 13,
+      stopPropagation: true,
+    });
+  }
+
+  useEffect(() => {
+    if (verifyScanner === true) {
+      toast({
+        title: "Verificação Iniciada.",
+        description: "O scanner foi habilitado.",
+        status: "success",
+      });
+    } else if (verifyScanner === false) {
+      toast({
+        title: "Verificação Finalizada.",
+        description: "O scanner foi desabilitado.",
+        status: "error",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifyScanner]);
+
+  const componentRef = useRef<any>();
+
+  const PrintMock = [
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+    {
+      pedido: 1057,
+      transportadora: "Translovato",
+      volume: "01/126",
+    },
+  ];
+
   return (
     <>
-      {isMobileVersion ? (
-        <>
-          <Flex
-            bgColor="#EBEBEB"
-            minHeight="100vh"
-            direction="column"
-            p="1rem"
-            justify="center"
-          >
-            <MotionFlex
-              initial="hidden"
-              animate="visible"
-              variants={itemAnimation}
-              justify="center"
-              // data-aos="fade-up"
-              bgColor="#021C45"
-              borderRadius="10px"
-              direction="column"
-              minHeight="full"
-              // bgRepeat="no-repeat"
-              // bgAttachment="fixed"
-              // bgPosition="center"
-              // bgBlendMode="soft-light"
-              // bgImage="url(/Image/piggy1.png)"
-            >
-              {/* <Flex> {props.children}</Flex> */}
-              {/* <NavBar /> */}
+      <Flex p="2rem" direction="column">
+        <Flex align="start" direction="column">
+          <Image alt="Logo da RS" src={"/RS.png"} />
 
-              <MotionFlex
-                variants={inputAnimation}
-                initial="hidden"
-                animate="visible"
-                direction="column"
-                align="center"
-                p="1rem"
-              >
-                {/* <Lottie options={defaultOptions} /> */}
-                <Image src="/Image/bgimagelogin.gif" alt="" />
-                <Text
-                  fontSize="24px"
-                  color="white"
-                  fontWeight="bold"
-                  alignSelf="start"
-                >
-                  Seja bem-vindo!
-                </Text>
-                <Text
-                  fontSize="16px"
-                  color="gray.300"
-                  fontWeight="medium"
-                  alignSelf="start"
-                >
-                  Faça o login para começar.
-                </Text>
-                <InputGroup mt="2rem" w="full" variant="solid" size="md">
-                  <InputLeftElement>
-                    <AiOutlineUser color="gray.300" />
-                  </InputLeftElement>
-                  <Input
-                    borderRadius="15px"
-                    placeholder="Digite seu email."
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                  />
-                </InputGroup>
-                <InputGroup w="full" variant="solid" size="md" mt="1rem">
-                  <InputLeftElement>
-                    <BsShieldLock color="gray.300" />
-                  </InputLeftElement>
-                  <Input
-                    borderRadius="15px"
-                    placeholder="Digite sua senha. "
-                    variant="solid"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-                </InputGroup>
+          <Box
+            borderBottomWidth="2px"
+            mt="1rem"
+            w="100%"
+            borderColor="gray.200"
+          />
+        </Flex>
+        {/* <Button onClick={() => fetch("http://localhost:3333/soap")}>
+          Buscar soap
+        </Button> */}
+        <Flex w="80%" mt="3rem" justify="space-evenly">
+          <Input mr="1rem" placeholder="Número do pedido" />
 
-                <Flex
-                  justify="space-evenly"
-                  w="full"
-                  mt="1rem"
-                  direction="column"
-                >
-                  {/* <Button mt="1rem" size="sm" w="100px">
-                    Cadastre-se
-                    
-                  </Button> */}
-                  <Button
-                    borderWidth="1px"
-                    mt="1rem"
-                    h="40px"
-                    borderRadius="10px"
-                    bgColor="#011735"
-                    // variant="solid"
-                    colorScheme="#021C45"
-                    color="white"
-                    onClick={() => {
-                      handleLogin(email, password);
-                    }}
-                  >
-                    Entrar
-                  </Button>
+          <Input mr="1rem" placeholder="Separador" />
+          <Input mr="1rem" placeholder="Conferente" />
 
-                  <Text
-                    mt="1.5rem"
-                    align="center"
-                    color="gray.300"
-                    fontSize="13px"
-                  >
-                    Você também pode se conectar com:
-                  </Text>
-                  {/* <IconButton>
-                    <Text>teste</Text>
-                  </IconButton> */}
-
-                  <Button
-                    alignContent="end"
-                    h="40px"
-                    justifyContent="center"
-                    mt="1.5rem"
-                    bgColor="#011735"
-                    borderRadius="10px"
-                    colorScheme="#021C45"
-                    color="white"
-                    variant="outline"
-                    onClick={signInWithGoogle}
-                    aria-label={"Entrar com google"}
-                  >
-                    {<FcGoogle size="25px" />}
-                    <Text alignSelf="center" ml="1rem">
-                      Entrar com Conta Google
-                    </Text>
-                  </Button>
-
-                  {/* const { isOpen, onOpen, onClose } = useDisclosure(); */}
-
-                  <Button
-                    colorScheme="#021C45"
-                    mt="1rem"
-                    borderRadius="10px"
-                    // onClick={handleCreateUser}
-                    onClick={onOpen}
-                  >
-                    {" "}
-                    <Text as="u" fontSize="14px" fontWeight="medium">
-                      Criar uma conta
-                    </Text>
-                  </Button>
-
-                  <SignUp isOpen={isOpen} onClose={onClose} />
-                </Flex>
-              </MotionFlex>
-            </MotionFlex>
-          </Flex>
-          {/* <LayoutMob></LayoutMob> */}
-        </>
-      ) : (
-        <>
-          <Flex
-            bgColor="#EBEBEB"
+          <Button
+            isDisabled={verifyScanner ? true : false}
+            mr="1rem"
             w="full"
-            h="100vh"
-            align="center"
-            justify="center"
+            bgColor={"#005F27"}
+            color="white"
+            _hover={{
+              bgColor: "#083b19",
+            }}
+            onClick={() => {
+              setVerifyScanner(true);
+            }}
           >
-            <MotionFlex
-              boxShadow="lg"
-              rounded="lg"
-              initial="hidden"
-              animate="visible"
-              variants={itemAnimation}
-              borderRadius="15px"
-              direction="column"
-              align="center"
-              justify="center"
-              px="3rem"
-              py="1rem"
-              bgColor="#FFFFFF"
-              w="35%"
-            >
-              {/* <Lottie options={defaultOptions} /> */}
-              <MotionFlex
-                justify="start"
-                direction="column"
-                variants={itemAnimation}
-                initial="hidden"
-                animate="visible"
-              >
-                <Image
-                  src="/Image/login.svg"
-                  alt=""
-                  mt="-1rem"
-                  w="227px"
-                  h="227px"
-                />
+            Iniciar conferência
+          </Button>
 
-                <Text
-                  fontSize="25px"
-                  color="#081F49"
-                  fontWeight="bold"
-                  alignSelf="center"
-                >
-                  Seja bem-vindo!
-                </Text>
+          <Button
+            isDisabled={!verifyScanner ? true : false}
+            w="full"
+            bgColor={"red"}
+            color="white"
+            _hover={{
+              bgColor: "#b40505",
+            }}
+            onClick={() => {
+              setVerifyScanner(false);
+              setBarcodeScan("Nenhum código de barra escaneado");
+            }}
+          >
+            Cancelar conferencia
+          </Button>
+        </Flex>
+        <TableContainer mt="2rem" mb="2rem">
+          <Table variant="striped" size="sm">
+            <Thead>
+              <Tr>
+                <Th>
+                  <Text>ITENS</Text>
+                </Th>
+                <Th>END 1</Th>
+                <Th>END 2</Th>
+                <Th>END 3</Th>
+                <Th>EAN</Th>
+                <Th>QTD</Th>
+                <Th>CONFERIDO</Th>
+                <Th>%</Th>
+              </Tr>
+            </Thead>
 
-                <Text
-                  opacity="45%"
-                  fontSize="14px"
-                  color="black"
-                  fontWeight="medium"
-                  alignSelf="center"
-                >
-                  Faça o login para começar.
-                </Text>
-              </MotionFlex>
-              <InputMotion
-                variants={inputAnimation}
-                initial="hidden"
-                animate="visible"
-                mt="1rem"
-                w="full"
-                variant="solid"
-                size="md"
-              >
-                <InputLeftElement>
-                  <AiOutlineUser opacity="45%" />
-                </InputLeftElement>
-                <Input
-                  opacity="70%"
-                  borderColor="gray.300"
-                  variant="outline"
-                  borderRadius="15px"
-                  placeholder="Digite seu email."
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-              </InputMotion>
-              <InputMotion
-                variants={inputAnimation}
-                initial="hidden"
-                animate="visible"
-                w="full"
-                variant="solid"
-                size="md"
-                mt="1rem"
-              >
-                <InputLeftElement>
-                  <BsShieldLock opacity="45%" />
-                </InputLeftElement>
-                <Input
-                  opacity="70%"
-                  borderColor="gray.300"
-                  variant="outline"
-                  borderRadius="15px"
-                  placeholder="Digite sua senha. "
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-              </InputMotion>
-
-              <MotionFlex
-                variants={inputAnimation}
-                initial="hidden"
-                animate="visible"
-                justify="space-evenly"
-                w="full"
-                direction="column"
-              >
-                {/* <Button mt="1rem" size="sm" w="100px">
-                    Cadastre-se
-                    
-                  </Button> */}
-
-                <Button
-                  boxShadow="lg"
-                  isLoading={loading}
-                  borderWidth="1px"
-                  mt="1rem"
-                  h="40px"
-                  borderRadius="15px"
-                  bgColor="#4887FA"
-                  // variant="solid"
-                  colorScheme="#021C45"
-                  color="white"
-                  onClick={() => {
-                    handleLogin(email, password);
-                  }}
-                >
-                  Entrar
-                </Button>
-
-                <Text
-                  mt="0.5rem"
-                  align="center"
-                  color="gray.300"
-                  fontSize="13px"
-                >
-                  Você também pode se conectar com:
-                </Text>
-                {/* <IconButton>
-                    <Text>teste</Text>
-                  </IconButton> */}
-
-                <Button
-                  alignContent="end"
-                  h="40px"
-                  justifyContent="center"
-                  mt="0.5rem"
-                  // bgColor="#4887FA"
-                  borderRadius="15px"
-                  colorScheme="#021C45"
-                  color="#4887FA"
-                  variant="outline"
-                  onClick={signInWithGoogle}
-                  aria-label={"Entrar com google"}
-                >
-                  {<FcGoogle size="25px" />}
-                  <Text alignSelf="center" ml="1rem">
-                    Entrar com Conta Google
-                  </Text>
-                </Button>
-
-                {/* const { isOpen, onOpen, onClose } = useDisclosure(); */}
-
-                <Button
-                  colorScheme="#021C45"
-                  borderRadius="10px"
-                  // onClick={handleCreateUser}
-                  onClick={onOpen}
-                >
-                  {" "}
-                  <Text
-                    mt="0.5rem"
-                    as="u"
-                    fontSize="14px"
-                    fontWeight="medium"
-                    color="gray.300"
-                  >
-                    Criar uma conta
-                  </Text>
-                </Button>
-
-                <SignUp isOpen={isOpen} onClose={onClose} />
-              </MotionFlex>
-            </MotionFlex>
+            <Tbody>
+              {mock.map((prod, index) => (
+                <Tr key={index}>
+                  <Td>{prod.itens}</Td>
+                  <Td>{prod.end1}</Td>
+                  <Td>{prod.end2}</Td>
+                  <Td>{prod.end3}</Td>
+                  <Td>{prod.EAN}</Td>
+                  <Td>{prod.QTD}</Td>
+                  <Td>{prod.CONFERIDO}</Td>
+                  <Td>
+                    <Button>teste</Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+        <Flex>
+          <Flex w="full" justify="start">
+            <Button mr="1rem" bgColor="#005F27" color="white">
+              Gerar Etiquetas
+            </Button>
+            <Button mr="1rem" bgColor="#ABB4BD" color="white">
+              Reiniciar Conferências
+            </Button>
+            <Button mr="1rem" bgColor="#F9B000" color="white" onClick={onOpen}>
+              Imprimir Itens Pendentes
+            </Button>
           </Flex>
-        </>
-      )}
+          <Button justifySelf="end" bgColor="#005F27" color="white">
+            Separação Concluída
+          </Button>
+        </Flex>
+      </Flex>
+
+      {/* <PrintModal isOpen={isOpen} onClose={onClose} /> */}
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Testando</ModalHeader>
+          <ModalCloseButton />
+          <ReactToPrint
+            trigger={() => {
+              return <Button>teste</Button>;
+            }}
+            content={() => componentRef.current}
+            documentTitle="Etiqueta"
+            pageStyle="print"
+            onBeforeGetContent={() => Promise.resolve()}
+            // onAfterPrint={() => setTimeout(() => window.location.reload(), 500)}
+          />
+          <ModalBody>
+            <Flex
+              ref={componentRef}
+              p="1rem"
+              w="100%"
+              h="100%"
+              // borderWidth="2px"
+              direction="column"
+            >
+              {PrintMock.map((order, index) => (
+                <Flex
+                  key={index}
+                  borderColor="gray"
+                  w="full"
+                  direction="column"
+                  align="center"
+                  mb="1.5rem"
+                >
+                  <Flex>
+                    <Text fontSize="22px">
+                      Pedido: <b>{order.pedido}</b>
+                    </Text>
+                    {/* <Text fontSize="12px" fontWeight="bold">
+                    </Text> */}
+                  </Flex>
+                  <Flex>
+                    <Text fontSize="22px">{order.transportadora}</Text>
+                  </Flex>
+                  <Flex>
+                    <Text fontSize="22px">Volume:</Text>
+                    <Text fontSize="22px" fontWeight="bold">
+                      {order.volume}
+                    </Text>
+                  </Flex>
+                </Flex>
+              ))}
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant="ghost">Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={errorMessage} onClose={onCloseError} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Erro! - {eanError}
+            <Flex ml="20%"></Flex>
+          </ModalHeader>
+
+          <ModalBody>
+            <Flex direction="column">
+              <Text mb="1rem" fontSize="18px">
+                Você escaneou <b>{checked}</b> itens, porém a quantidade correta
+                é <b>{qtd}</b>. Por favor, verifique novamente e tente escanear
+                a quantidade de itens correta.
+              </Text>
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              mr={3}
+              onClick={() => {
+                setErrorMessage(false);
+              }}
+            >
+              Fechar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }
