@@ -4,12 +4,14 @@ type InputWithLabelType = {
     value: string | number;
     setValue: any;
     text: string;
+    isDisabled?: boolean;
 };
 
 export default function InputWithLabel({
     value,
     setValue,
     text,
+    isDisabled,
 }: InputWithLabelType) {
     return (
         <Flex mr={"1rem"}>
@@ -27,6 +29,7 @@ export default function InputWithLabel({
                 </Text>
             </Flex>
             <Input
+                disabled={isDisabled === true ? true : false}
                 w={"250px"}
                 _focusVisible={{
                     borderColor: "none",

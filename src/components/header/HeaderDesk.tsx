@@ -1,4 +1,4 @@
-import { Flex, Image, Box, Text } from "@chakra-ui/react";
+import { Flex, Image, Box, Text, Link } from "@chakra-ui/react";
 
 export default function HeaderDesk() {
     return (
@@ -11,8 +11,12 @@ export default function HeaderDesk() {
                 fontWeight={"600"}
             >
                 <Image alt="Logo da RS" src={"/RS.png"} />
-                <Text>CONFERÊNCIA</Text>
-                <Text>PEDIDOS FATURADOS</Text>
+                <Link href={"/"}>
+                    <Text>CONFERÊNCIA</Text>
+                </Link>
+                <Link href={"/pedidosFaturados"}>
+                    <Text>PEDIDOS FATURADOS</Text>
+                </Link>
                 <Text>ENDEREÇAMENTO</Text>
             </Flex>
             <Box

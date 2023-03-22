@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useScanDetection from "use-scan-detection";
-import { Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Flex, useDisclosure, useToast } from "@chakra-ui/react";
 
 import HeaderDesk from "../components/header/HeaderDesk";
 import HeaderConferencia from "../components/conferencia/HeaderConferencia";
@@ -20,15 +20,25 @@ export default function Scanner() {
     const [eanError, setEanError] = useState<string>();
     const [qtd, setQtd] = useState<any>();
     const [checked, setChecked] = useState<any>();
-    const [mock, setMock] = useState(ItensMock);
+    const [itens, setItens] = useState<any[] | null>(null);
 
     async function teste() {
         const result = await getSoapData();
         console.log("result", result);
     }
-    useState(() => {
-        console.log("mock", mock);
-    }, [mock]);
+
+    function findOrder() {
+        setItens(ItensMock);
+    }
+
+    function resetItens() {
+        if (itens !== null) {
+            const resetedItens = itens.map((prod) => {
+                return { ...prod, CONFERIDO: 0 };
+            });
+            setItens(resetedItens);
+        }
+    }
 
     const toast = useToast({
         duration: 1500,
@@ -51,38 +61,38 @@ export default function Scanner() {
 
     function handleScanner() {
         const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
+        if (itens !== null) {
+            const result = itens.some(checkEAN);
 
-        const result = mock.some(checkEAN);
+            if (verifyScanner === true && result === true) {
+                const mappedMock = itens?.map((prod) => {
+                    if (prod?.EAN && prod?.EAN === barcodeScan) {
+                        setBarcodeScan(null);
+                        if (
+                            prod?.EAN === barcodeScan &&
+                            prod?.CONFERIDO + 1 > prod?.QTD
+                        ) {
+                            setErrorMessage(true);
+                            setEanError(prod?.EAN);
+                            setQtd(prod?.QTD);
+                            setChecked(prod?.CONFERIDO + 1);
+                            setVerifyScanner(false);
+                            // fetch("https://localhost:5001/ExpeditionScannerAPI");
 
-        if (verifyScanner === true && result === true) {
-            const mappedMock = mock?.map((prod) => {
-                if (prod?.EAN && prod?.EAN === barcodeScan) {
-                    setBarcodeScan(null);
-
-                    if (
-                        prod?.EAN === barcodeScan &&
-                        prod?.CONFERIDO + 1 > prod?.QTD
-                    ) {
-                        setErrorMessage(true);
-                        setEanError(prod?.EAN);
-                        setQtd(prod?.QTD);
-                        setChecked(prod?.CONFERIDO + 1);
-                        setVerifyScanner(false);
-                        // fetch("https://localhost:5001/ExpeditionScannerAPI");
-
-                        return prod;
+                            return prod;
+                        } else {
+                            return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
+                        }
                     } else {
-                        return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
+                        setBarcodeScan(null);
+                        return prod;
                     }
-                } else {
-                    setBarcodeScan(null);
-                    return prod;
-                }
-            });
-            setMock(mappedMock);
-        } else if (verifyScanner === true) {
-            setBarcodeScan(null);
-            // fetch("https://localhost:5001/ExpeditionScannerAPI");
+                });
+                setItens(mappedMock);
+            } else if (verifyScanner === true) {
+                setBarcodeScan(null);
+                // fetch("https://localhost:5001/ExpeditionScannerAPI");
+            }
         }
     }
 
@@ -128,23 +138,42 @@ export default function Scanner() {
     }, [verifyScanner]);
 
     return (
-        <>
-            <Flex p="2rem" direction="column">
-                <HeaderDesk />
-                {/* <Button onClick={() => fetch("http://localhost:3333/soap")}>
-          Buscar soap
-        </Button> */}
-                <HeaderConferencia
-                    verifyScanner={verifyScanner}
-                    setVerifyScanner={setVerifyScanner}
-                    setBarcodeScan={setBarcodeScan}
-                />
-                <Button onClick={() => teste()}>teste</Button>
-                <TableComponent arrayItens={mock} setArrayItens={setMock} />
-                <FooterConferencia imprimirModal={onOpenPrinter} />
+        <Flex height="100vh" display="flex" flexDirection="column">
+            <Flex direction="column">
+                <Flex
+                    p="2rem"
+                    position={"fixed"}
+                    w={"100%"}
+                    top={0}
+                    bg={"white"}
+                    h={"160px"}
+                    justify={"center"}
+                    direction="column"
+                    zIndex={15}
+                    // opacity={"50%"}
+                >
+                    <HeaderDesk />
+                    <HeaderConferencia
+                        verifyScanner={verifyScanner}
+                        setVerifyScanner={setVerifyScanner}
+                        setBarcodeScan={setBarcodeScan}
+                        findOrder={findOrder}
+                        itens={itens}
+                    />
+                </Flex>
+                {itens !== null && (
+                    <>
+                        <TableComponent
+                            arrayItens={itens}
+                            setArrayItens={setItens}
+                        />
+                        <FooterConferencia
+                            imprimirModal={onOpenPrinter}
+                            resetItens={resetItens}
+                        />
+                    </>
+                )}
             </Flex>
-
-            {/* <PrintModal isOpen={isOpen} onClose={onClose} /> */}
 
             <ModalPrint isOpen={isOpenPrinter} onClose={onClosePrinter} />
             <ModalError
@@ -155,6 +184,6 @@ export default function Scanner() {
                 qtd={qtd}
                 setErrorMessage={setErrorMessage}
             />
-        </>
+        </Flex>
     );
 }

@@ -1,5 +1,7 @@
 import { Flex, Input, Button } from "@chakra-ui/react";
 import { useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
+import { BsCheck } from "react-icons/bs";
 
 type ChangeConferidoType = {
     index: any;
@@ -16,45 +18,50 @@ export default function ChangeConferido({
 
     function changeConferidoQTD() {
         const newArrayItens = arrayItens;
-        newArrayItens[index].CONFERIDO = qtdConferido;
-        console.log("entrou aq", qtdConferido, newArrayItens);
+        const teste = newArrayItens.map((prod, i) => {
+            if (i === index) {
+                return { ...prod, CONFERIDO: qtdConferido };
+            } else {
+                return prod;
+            }
+        });
 
-        setArrayItens(newArrayItens);
-
-        // const teste = [
-        //     {
-        //         CONFERIDO: 0,
-        //     },
-        //     {
-        //         CONFERIDO: 0,
-        //     },
-        // ];
-        // teste[0]?.CONFERIDO = 1
+        setArrayItens(teste);
     }
 
     return (
         <Flex w={"100%"} justify={"start"}>
             <Input
+                ml={"-10px"}
                 type={"number"}
-                w={"50px"}
-                value={qtdConferido}
+                w={"45px"}
+                size={"sm"}
+                value={qtdConferido === 0 ? "" : qtdConferido}
+                border={"none"}
+                borderBottom={".5px solid black"}
+                _focusVisible={{ borderBottom: "1px solid black" }}
                 onChange={(e) => setQtdConferido(parseInt(e.target.value))}
             />
-            <Flex ml={"25px"} justify={"space-between"} w={"150px"}>
-                <Button
-                    display={qtdConferido > 0 ? "flex" : "none"}
-                    w={"60px"}
+            <Flex
+                ml={"15px"}
+                align={"center"}
+                justify={"space-evenly"}
+                w={"80px"}
+                display={qtdConferido > 0 ? "flex" : "none"}
+                gap={"10px"}
+            >
+                <BsCheck
+                    size={"25px"}
                     onClick={() => changeConferidoQTD()}
-                >
-                    Confirm
-                </Button>
-                <Button
-                    display={qtdConferido > 0 ? "flex" : "none"}
-                    w={"60px"}
+                    color={"green"}
+                    cursor={"pointer"}
+                />
+                <AiOutlineClose
+                    size={"20px"}
                     onClick={() => setQtdConferido(0)}
-                >
-                    Cancel
-                </Button>
+                    color={"red"}
+                    cursor={"pointer"}
+                />
             </Flex>
         </Flex>
     );
