@@ -8,6 +8,6 @@ export const api = axios.create({
 
     // Aqui será enviado a chave de segurança
     headers: {
-        autorization: `${token}`,
+        authorization: `Bearer ${token}`,
     },
 });

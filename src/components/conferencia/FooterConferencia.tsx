@@ -20,7 +20,8 @@ export default function FooterConferencia({
             h={"70px"}
             align={"center"}
             p="2rem"
-            // opacity={"50%"}
+            // paddingTop={"10px"}
+            borderTop={"2px solid #E2E8F0"}
         >
             <Flex w="full" justify="start">
                 <Button
@@ -37,12 +38,12 @@ export default function FooterConferencia({
                     fontSize={"12px"}
                     w="208px"
                     mr="1rem"
-                    bgColor="#ABB4BD"
+                    bgColor="#339CD8"
                     color="white"
-                    colorScheme={"gray"}
+                    colorScheme={"blue"}
                     onClick={() => resetItens()}
                 >
-                    REINICIAR CONFERÊNCIA
+                    ADICIONAR ITEM
                 </Button>
                 <Button
                     fontSize={"12px"}

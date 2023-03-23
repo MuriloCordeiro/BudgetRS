@@ -1,5 +1,5 @@
-import { Button, Flex } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Button, Flex, useToast } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import InputWithLabel from "../tools/InputWithLabel";
 
 type HeaderConferenciaType = {
@@ -8,6 +8,7 @@ type HeaderConferenciaType = {
     setBarcodeScan: any;
     findOrder: any;
     itens: any;
+    resetItens: any;
 };
 
 export default function HeaderConferencia({
@@ -16,13 +17,43 @@ export default function HeaderConferencia({
     verifyScanner,
     findOrder,
     itens,
+    resetItens,
 }: HeaderConferenciaType) {
     const [numeroPedido, setNumeroPedido] = useState("");
     const [separador, setSeparador] = useState("");
     const [conferente, setConferente] = useState("");
+    const [colorBorder, setColorBorder] = useState(false);
+
+    const toast = useToast({
+        duration: 1500,
+        isClosable: true,
+        containerStyle: {
+            color: "white",
+        },
+    });
+
+    function validateConf() {
+        if (separador.length === 0 && conferente.length === 0) {
+            setColorBorder(true);
+            toast({
+                title: "Input vazio",
+                description: "Separador e Conferente precisam ser preenchidos.",
+                status: "error",
+            });
+        } else {
+            setVerifyScanner(true);
+            setColorBorder(false);
+        }
+    }
 
     return (
-        <Flex w="100%" mt="2rem" justify="space-evenly">
+        <Flex
+            w="100%"
+            mt="2rem"
+            justify="space-evenly"
+            paddingBottom={"10px"}
+            borderBottom={"2px solid #E2E8F0"}
+        >
             <Flex>
                 <InputWithLabel
                     value={numeroPedido}
@@ -34,17 +65,19 @@ export default function HeaderConferencia({
                     setValue={setSeparador}
                     text={"SEPARADOR"}
                     isDisabled={itens !== null ? false : true}
+                    borderColor={colorBorder}
                 />
                 <InputWithLabel
                     value={conferente}
                     setValue={setConferente}
                     text={"CONFERENTE"}
                     isDisabled={itens !== null ? false : true}
+                    borderColor={colorBorder}
                 />
             </Flex>
             <Flex justify={"space-between"} w={"100%"}>
                 <Button
-                    // isDisabled={verifyScanner ? true : false}
+                    isDisabled={numeroPedido.length > 3 ? false : true}
                     mr="1rem"
                     w="100px"
                     bgColor={"#005F27"}
@@ -53,14 +86,14 @@ export default function HeaderConferencia({
                         bgColor: "#083b19",
                     }}
                     onClick={() => {
-                        findOrder();
+                        findOrder(numeroPedido);
                     }}
                 >
                     Buscar
                 </Button>
                 <Flex w={"50%"}>
                     <Button
-                        isDisabled={verifyScanner ? true : false}
+                        // isDisabled={verifyScanner ? true : false}
                         mr="1rem"
                         w="full"
                         bgColor={"#005F27"}
@@ -69,9 +102,16 @@ export default function HeaderConferencia({
                             bgColor: "#083b19",
                         }}
                         onClick={() => {
-                            setVerifyScanner(true);
+                            validateConf();
                         }}
-                        disabled={itens !== null ? false : true}
+                        disabled={
+                            itens !== null && !verifyScanner
+                                ? // separador.length > 0 && conferente.length > 0
+                                  //     ? false
+                                  //     :
+                                  false
+                                : true
+                        }
                     >
                         Iniciar conferência
                     </Button>
@@ -87,6 +127,7 @@ export default function HeaderConferencia({
                         onClick={() => {
                             setVerifyScanner(false);
                             setBarcodeScan("Nenhum código de barra escaneado");
+                            resetItens();
                         }}
                     >
                         Cancelar conferencia

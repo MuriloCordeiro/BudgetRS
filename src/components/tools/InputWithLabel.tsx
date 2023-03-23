@@ -5,6 +5,7 @@ type InputWithLabelType = {
     setValue: any;
     text: string;
     isDisabled?: boolean;
+    borderColor?: boolean;
 };
 
 export default function InputWithLabel({
@@ -12,6 +13,7 @@ export default function InputWithLabel({
     setValue,
     text,
     isDisabled,
+    borderColor,
 }: InputWithLabelType) {
     return (
         <Flex mr={"1rem"}>
@@ -31,6 +33,7 @@ export default function InputWithLabel({
             <Input
                 disabled={isDisabled === true ? true : false}
                 w={"250px"}
+                borderColor={borderColor ? "red" : "gray.200"}
                 _focusVisible={{
                     borderColor: "none",
                     boxShadow: "0px 0px 2px 0px #000",

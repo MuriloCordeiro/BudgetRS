@@ -10,7 +10,15 @@ export default function HeaderDesk() {
                 fontFamily={"Arial"}
                 fontWeight={"600"}
             >
-                <Image alt="Logo da RS" src={"/RS.png"} />
+                <Flex>
+                    <Image
+                        alt="Logo da RS"
+                        src={"/Image/RS-icon.svg"}
+                        w="25px"
+                    />
+                    <Text>SE</Text>
+                    <Text textColor={"#E30613"}>RS</Text>
+                </Flex>
                 <Link href={"/"}>
                     <Text>CONFERÊNCIA</Text>
                 </Link>

@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import useScanDetection from "use-scan-detection";
-import { Box, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+    Text,
+    Button,
+    Flex,
+    Img,
+    useDisclosure,
+    useToast,
+    Spinner,
+    Box,
+} from "@chakra-ui/react";
+import Lottie from "react-lottie";
+import animationLoading from "../animations/99109-loading.json";
 
 import HeaderDesk from "../components/header/HeaderDesk";
 import HeaderConferencia from "../components/conferencia/HeaderConferencia";
@@ -10,6 +21,7 @@ import ItensMock from "../../public/mock/ItensMock";
 import ModalPrint from "../components/modals/ModalPrint";
 import ModalError from "../components/modals/ModalError";
 import { getSoapData } from "../hooks/getSoapData";
+import { ItemsTYPE } from "../types/itensType";
 
 export default function Scanner() {
     const [barcodeScan, setBarcodeScan] = useState<any>(
@@ -20,15 +32,20 @@ export default function Scanner() {
     const [eanError, setEanError] = useState<string>();
     const [qtd, setQtd] = useState<any>();
     const [checked, setChecked] = useState<any>();
-    const [itens, setItens] = useState<any[] | null>(null);
+    const [itens, setItens] = useState<ItemsTYPE[] | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    async function teste() {
-        const result = await getSoapData();
-        console.log("result", result);
-    }
+    const whenIsLoading = loading === true ? "flex" : "none";
 
-    function findOrder() {
-        setItens(ItensMock);
+    async function findOrder(order: string) {
+        setItens(null);
+        setLoading(true);
+        const result: any = await getSoapData(order);
+        console.log("result", result.data);
+        setItens(result.data);
+        // setTimeout(function () {
+        setLoading(false);
+        // }, 3000);
     }
 
     function resetItens() {
@@ -59,46 +76,55 @@ export default function Scanner() {
         onClose: onCloseError,
     } = useDisclosure();
 
-    function handleScanner() {
-        const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
-        if (itens !== null) {
-            const result = itens.some(checkEAN);
+    const loadingDefaultOptions = {
+        loop: true,
+        autoplay: true,
+        animationData: animationLoading,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid slice",
+        },
+    };
 
-            if (verifyScanner === true && result === true) {
-                const mappedMock = itens?.map((prod) => {
-                    if (prod?.EAN && prod?.EAN === barcodeScan) {
-                        setBarcodeScan(null);
-                        if (
-                            prod?.EAN === barcodeScan &&
-                            prod?.CONFERIDO + 1 > prod?.QTD
-                        ) {
-                            setErrorMessage(true);
-                            setEanError(prod?.EAN);
-                            setQtd(prod?.QTD);
-                            setChecked(prod?.CONFERIDO + 1);
-                            setVerifyScanner(false);
-                            // fetch("https://localhost:5001/ExpeditionScannerAPI");
+    // function handleScanner() {
+    //     const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
+    //     if (itens !== null) {
+    //         const result = itens.some(checkEAN);
 
-                            return prod;
-                        } else {
-                            return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
-                        }
-                    } else {
-                        setBarcodeScan(null);
-                        return prod;
-                    }
-                });
-                setItens(mappedMock);
-            } else if (verifyScanner === true) {
-                setBarcodeScan(null);
-                // fetch("https://localhost:5001/ExpeditionScannerAPI");
-            }
-        }
-    }
+    //         if (verifyScanner === true && result === true) {
+    //             const mappedMock = itens?.map((prod) => {
+    //                 if (prod?.barcode && prod?.barcode === barcodeScan) {
+    //                     setBarcodeScan(null);
+    //                     if (
+    //                         prod?.barcode === barcodeScan &&
+    //                         prod?.CONFERIDO + 1 > prod?qtd
+    //                     ) {
+    //                         setErrorMessage(true);
+    //                         setEanError(prod?.barcode);
+    //                         setQtd(prod?.qtd);
+    //                         setChecked(prod?.CONFERIDO + 1);
+    //                         setVerifyScanner(false);
+    //                         // fetch("https://localhost:5001/ExpeditionScannerAPI");
+
+    //                         return prod;
+    //                     } else {
+    //                         return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
+    //                     }
+    //                 } else {
+    //                     setBarcodeScan(null);
+    //                     return prod;
+    //                 }
+    //             });
+    //             setItens(mappedMock);
+    //         } else if (verifyScanner === true) {
+    //             setBarcodeScan(null);
+    //             // fetch("https://localhost:5001/ExpeditionScannerAPI");
+    //         }
+    //     }
+    // }
 
     useEffect(() => {
         if (barcodeScan !== null) {
-            handleScanner();
+            // handleScanner();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [barcodeScan]);
@@ -153,15 +179,18 @@ export default function Scanner() {
                     // opacity={"50%"}
                 >
                     <HeaderDesk />
+                    {/* <Button onClick={() => setLoading(!loading)}>teste</Button> */}
                     <HeaderConferencia
                         verifyScanner={verifyScanner}
                         setVerifyScanner={setVerifyScanner}
                         setBarcodeScan={setBarcodeScan}
                         findOrder={findOrder}
                         itens={itens}
+                        resetItens={resetItens}
                     />
                 </Flex>
-                {itens !== null && (
+
+                {itens !== null ? (
                     <>
                         <TableComponent
                             arrayItens={itens}
@@ -172,6 +201,28 @@ export default function Scanner() {
                             resetItens={resetItens}
                         />
                     </>
+                ) : (
+                    <Flex h={"100vh"} justify={"center"} align={"center"}>
+                        <Img
+                            src="/Image/RS-icon.svg"
+                            w={"220px"}
+                            position={"absolute"}
+                            mt={"140px"}
+                            opacity={loading ? "70%" : "20%"}
+                            // display={whenIsLoading}
+                        />
+
+                        <Spinner
+                            thickness="10px"
+                            speed="0.65s"
+                            emptyColor="gray.200"
+                            color="red.400"
+                            w="350px"
+                            h="350px"
+                            mt="150px"
+                            display={whenIsLoading}
+                        />
+                    </Flex>
                 )}
             </Flex>
 

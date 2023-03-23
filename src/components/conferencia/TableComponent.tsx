@@ -12,9 +12,10 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import ChangeConferido from "../../helpers/changeConferido";
+import { ItemsTYPE } from "../../types/itensType";
 
 type TableComponentType = {
-    arrayItens: any[];
+    arrayItens: ItemsTYPE[];
     setArrayItens: any;
 };
 
@@ -36,16 +37,16 @@ export default function TableComponent({
                         position={"fixed"}
                         bg={"white"}
                         mt={"-3.5rem"}
+                        zIndex={1}
                     >
                         <Flex w={"100%"}>
-                            <Th w="30%">
-                                <Text>ITENS</Text>
-                            </Th>
-                            <Th w="10%">END 1</Th>
-                            <Th w="10%">END 2</Th>
-                            <Th w="21%">EAN</Th>
-                            <Th w="10%">QTD</Th>
-                            <Th w="11%">CONFERIDO</Th>
+                            <Th w="10%">itemID</Th>
+                            <Th w="32.5%">ITENS</Th>
+                            <Th w="5%">END 1</Th>
+                            <Th w="9%">END 2</Th>
+                            <Th w="17%">EAN</Th>
+                            <Th w="9%">QTD</Th>
+                            <Th w="10%">CONFERIDO</Th>
                             <Th w="5%">%</Th>
                         </Flex>
                     </Tr>
@@ -54,13 +55,26 @@ export default function TableComponent({
                 <Tbody fontFamily={"Arial"}>
                     {arrayItens.map((prod, index) => (
                         <Tr key={index}>
-                            <Td w="30%">{prod?.itens}</Td>
-                            <Td w="10%">{prod?.end1}</Td>
-                            <Td w="10%">{prod?.end2}</Td>
-                            <Td w="20%">{prod?.EAN}</Td>
-                            <Td w="10%">{prod?.QTD}</Td>
-                            <Td w="10%">
-                                {prod?.EAN === null &&
+                            <Td w="10%">{prod?.itemCode}</Td>
+                            <Td w="34%">{prod?.description}</Td>
+                            <Td w="5%">
+                                {prod?.address1
+                                    ? prod?.address1.replace(/\|/g, "")
+                                    : "-"}
+                            </Td>
+                            <Td w="9%">
+                                {prod?.address2
+                                    ? prod?.address2.replace(/\|/g, "")
+                                    : "-"}
+                            </Td>
+                            <Td w="19%">
+                                {prod?.barcode ? prod?.barcode : "-"}
+                            </Td>
+                            <Td w="9%">{prod?.qty}</Td>
+                            <Td w="10%">{prod?.qty}</Td>
+                            <Td w="5%">{"100%"}</Td>
+                            {/* <Td w="10%">
+                                {prod?.barcode.length === 0 &&
                                 prod?.CONFERIDO !== prod?.QTD ? (
                                     <ChangeConferido
                                         arrayItens={arrayItens}
@@ -70,9 +84,10 @@ export default function TableComponent({
                                 ) : (
                                     prod?.CONFERIDO
                                 )}
-                            </Td>
-                            <Td w="5%">
+                            </Td> */}
+                            {/* <Td w="5%">
                                 <Text
+                                    textAlign={"center"}
                                     bg={
                                         calcularPorcentagem(
                                             prod?.QTD,
@@ -92,7 +107,7 @@ export default function TableComponent({
                                     )}
                                     %
                                 </Text>
-                            </Td>
+                            </Td> */}
                         </Tr>
                     ))}
                 </Tbody>
