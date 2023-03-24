@@ -1,15 +1,18 @@
 import { api } from "../../services/api";
 import { ItemsTYPE } from "../../types/itensType";
+import { OrderPostObj } from "../../types/orderPostObj";
 
-export async function postSoapData(order: string) {
+export async function postSoapData(postOrderObj: OrderPostObj) {
     try {
         const data = await api.post(`insertOrders`, {
-            order: "7333",
-            checker: "RODHOLHPO",
-            separator: "ROLNANDINHO",
-            date: "10/03/2032",
-            initialTime: "1111111",
-            endTime: "11111",
+            companyId: "1",
+            branchId: "4",
+            orderId: postOrderObj?.orderId,
+            checker: postOrderObj?.checker,
+            separator: postOrderObj?.separator,
+            date: postOrderObj?.date,
+            initialTime: postOrderObj?.initialTime,
+            endTime: postOrderObj?.endTime,
         });
 
         return data as unknown as ItemsTYPE;

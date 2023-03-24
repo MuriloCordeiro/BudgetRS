@@ -21,6 +21,7 @@ type ModalConfFinishedType = {
     isOpen: any;
     onClose: any;
     isAllChecked: boolean;
+    sendInsertOrders: any;
 };
 
 export default function ModalConfFinished({
@@ -28,15 +29,17 @@ export default function ModalConfFinished({
     isOpen,
     onClose,
     isAllChecked,
+    sendInsertOrders,
 }: ModalConfFinishedType) {
     const [orderNumber, setOrderNumber] = useState("");
 
     function finishConf() {
         if (orderNumber === itens?.general?.orderId) {
-            toast({
-                title: "Conferencia concluida",
-                status: "success",
-            });
+            sendInsertOrders();
+            // toast({
+            //     title: "Conferencia concluida",
+            //     status: "success",
+            // });
         } else if (orderNumber.length === 0) {
             toast({
                 title: "Digite o numero do pedido para finalizar a conferencia",
