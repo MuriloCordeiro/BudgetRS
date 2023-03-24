@@ -196,7 +196,6 @@ export default function Scanner() {
                 >
                     <HeaderDesk />
                     {/* <Button onClick={() => teste()}>teste</Button> */}
-                    {/* <Button onClick={() => setLoading(!loading)}>teste</Button> */}
                     <HeaderConferencia
                         verifyScanner={verifyScanner}
                         setVerifyScanner={setVerifyScanner}
