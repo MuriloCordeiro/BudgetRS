@@ -244,6 +244,7 @@ export default function Scanner() {
         setConferente("");
         setCurrentDate("");
         setInitialTime("");
+        //acontece
     }
 
     return (
