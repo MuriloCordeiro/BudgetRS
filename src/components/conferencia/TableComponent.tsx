@@ -15,7 +15,7 @@ import ChangeConferido from "../../helpers/changeConferido";
 import { ItemsTYPE } from "../../types/itensType";
 
 type TableComponentType = {
-    arrayItens: ItemsTYPE[];
+    arrayItens: ItemsTYPE;
     setArrayItens: any;
 };
 
@@ -51,9 +51,9 @@ export default function TableComponent({
                         </Flex>
                     </Tr>
                 </Thead>
-
+                {/* {console.log("arrayItens", arrayItens)} */}
                 <Tbody fontFamily={"Arial"}>
-                    {arrayItens.map((prod, index) => (
+                    {arrayItens?.orders.map((prod, index) => (
                         <Tr key={index}>
                             <Td w="10%">{prod?.itemCode}</Td>
                             <Td w="34%">{prod?.description}</Td>
@@ -71,8 +71,8 @@ export default function TableComponent({
                                 {prod?.barcode ? prod?.barcode : "-"}
                             </Td>
                             <Td w="9%">{prod?.qty}</Td>
-                            <Td w="10%">{prod?.qty}</Td>
-                            <Td w="5%">{"100%"}</Td>
+                            <Td w="10%">{0}</Td>
+                            <Td w="5%">{"0%"}</Td>
                             {/* <Td w="10%">
                                 {prod?.barcode.length === 0 &&
                                 prod?.CONFERIDO !== prod?.QTD ? (

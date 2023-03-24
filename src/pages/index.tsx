@@ -1,27 +1,24 @@
 import { useState, useEffect } from "react";
 import useScanDetection from "use-scan-detection";
 import {
-    Text,
     Button,
     Flex,
     Img,
     useDisclosure,
     useToast,
     Spinner,
-    Box,
 } from "@chakra-ui/react";
-import Lottie from "react-lottie";
 import animationLoading from "../animations/99109-loading.json";
 
 import HeaderDesk from "../components/header/HeaderDesk";
 import HeaderConferencia from "../components/conferencia/HeaderConferencia";
 import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
-import ItensMock from "../../public/mock/ItensMock";
 import ModalPrint from "../components/modals/ModalPrint";
-import ModalError from "../components/modals/ModalError";
 import { getSoapData } from "../hooks/getSoapData";
 import { ItemsTYPE } from "../types/itensType";
+import ModalComponent from "../components/modals/ModalComponent";
+import { postSoapData } from "../hooks/post/postSoapData";
 
 export default function Scanner() {
     const [barcodeScan, setBarcodeScan] = useState<any>(
@@ -32,8 +29,15 @@ export default function Scanner() {
     const [eanError, setEanError] = useState<string>();
     const [qtd, setQtd] = useState<any>();
     const [checked, setChecked] = useState<any>();
-    const [itens, setItens] = useState<ItemsTYPE[] | null>(null);
+    const [itens, setItens] = useState<ItemsTYPE | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [orderType, setOrderType] = useState<boolean>(false);
+    const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     const res = itens?.every((prod) => prod?.qty === prod?.Conferido)
+    //     res === true ? setIsAllChecked(true) : setIsAllChecked(false)
+    // }, [itens]);
 
     const whenIsLoading = loading === true ? "flex" : "none";
 
@@ -41,20 +45,32 @@ export default function Scanner() {
         setItens(null);
         setLoading(true);
         const result: any = await getSoapData(order);
-        console.log("result", result.data);
-        setItens(result.data);
-        // setTimeout(function () {
+        console.log("result", result?.data);
+        result !== undefined && setItens(result?.data);
+        result !== undefined &&
+            setOrderType(
+                result?.data?.general?.ordertype === "REDE" ? true : false
+            );
         setLoading(false);
-        // }, 3000);
+        console.log(
+            "orderType",
+            result?.data?.general?.ordertype,
+            result?.data?.general?.ordertype === "REDE" ? true : false
+        );
     }
 
     function resetItens() {
         if (itens !== null) {
-            const resetedItens = itens.map((prod) => {
+            const resetedItens = itens?.orders.map((prod) => {
                 return { ...prod, CONFERIDO: 0 };
             });
-            setItens(resetedItens);
+            setItens({ ...itens, orders: resetedItens });
         }
+    }
+
+    async function teste() {
+        const a = await postSoapData("7333");
+        console.log("b", a);
     }
 
     const toast = useToast({
@@ -179,6 +195,7 @@ export default function Scanner() {
                     // opacity={"50%"}
                 >
                     <HeaderDesk />
+                    {/* <Button onClick={() => teste()}>teste</Button> */}
                     {/* <Button onClick={() => setLoading(!loading)}>teste</Button> */}
                     <HeaderConferencia
                         verifyScanner={verifyScanner}
@@ -199,6 +216,9 @@ export default function Scanner() {
                         <FooterConferencia
                             imprimirModal={onOpenPrinter}
                             resetItens={resetItens}
+                            orderType={orderType}
+                            isAllChecked={isAllChecked}
+                            itens={itens}
                         />
                     </>
                 ) : (
@@ -227,13 +247,23 @@ export default function Scanner() {
             </Flex>
 
             <ModalPrint isOpen={isOpenPrinter} onClose={onClosePrinter} />
-            <ModalError
+            {/* <ModalError
                 checked={checked}
                 eanError={eanError}
                 errorMessage={errorMessage}
                 onCloseError={onCloseError}
                 qtd={qtd}
                 setErrorMessage={setErrorMessage}
+            /> */}
+            <ModalComponent
+                Title={` Erro! - ${eanError}`}
+                Phrase={`Você escaneou <b>${checked}</b> itens, porém a
+                            quantidade correta é <b>${qtd}</b>. Por favor,
+                            verifique novamente e tente escanear a quantidade de
+                            itens correta.`}
+                // TextButton="Cancelar"
+                isOpen={isOpenError}
+                onClose={onCloseError}
             />
         </Flex>
     );

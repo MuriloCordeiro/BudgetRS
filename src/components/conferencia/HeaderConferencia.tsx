@@ -1,5 +1,7 @@
-import { Box, Button, Flex, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { ItemsTYPE } from "../../types/itensType";
+import ModalComponent from "../modals/ModalComponent";
 import InputWithLabel from "../tools/InputWithLabel";
 
 type HeaderConferenciaType = {
@@ -7,7 +9,7 @@ type HeaderConferenciaType = {
     setVerifyScanner: any;
     setBarcodeScan: any;
     findOrder: any;
-    itens: any;
+    itens: ItemsTYPE | null;
     resetItens: any;
 };
 
@@ -32,6 +34,12 @@ export default function HeaderConferencia({
         },
     });
 
+    const {
+        isOpen: isOpenCancelConferencia,
+        onOpen: onOpenCancelConferencia,
+        onClose: onCloseCancelConferencia,
+    } = useDisclosure();
+
     function validateConf() {
         if (separador.length === 0 && conferente.length === 0) {
             setColorBorder(true);
@@ -44,6 +52,12 @@ export default function HeaderConferencia({
             setVerifyScanner(true);
             setColorBorder(false);
         }
+    }
+
+    function cancelConf() {
+        setVerifyScanner(false);
+        setBarcodeScan("Nenhum código de barra escaneado");
+        resetItens();
     }
 
     return (
@@ -125,15 +139,21 @@ export default function HeaderConferencia({
                             bgColor: "#b40505",
                         }}
                         onClick={() => {
-                            setVerifyScanner(false);
-                            setBarcodeScan("Nenhum código de barra escaneado");
-                            resetItens();
+                            onOpenCancelConferencia();
                         }}
                     >
                         Cancelar conferencia
                     </Button>
                 </Flex>
             </Flex>
+            <ModalComponent
+                Title="Cancelar Conferencia"
+                Phrase={`Deseja cancelar a conferencia do pedido ${itens?.general?.orderId}`}
+                TextButton="Cancelar"
+                func={cancelConf}
+                isOpen={isOpenCancelConferencia}
+                onClose={onCloseCancelConferencia}
+            />
         </Flex>
     );
 }
