@@ -85,12 +85,12 @@ export default function FooterConferencia({
             >
                 SEPARAÇÃO CONCLUÍDA
             </Button>
-            <ModalConfFinished
+            {/* <ModalConfFinished
                 isOpen={isOpenFinishConf}
                 onClose={onCloseFinishConf}
                 isAllChecked={isAllChecked}
                 itens={itens}
-            />
+            /> */}
         </Flex>
     );
 }
