@@ -2,7 +2,6 @@ import { Flex, Input, Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
-import ToastComponent from "../components/tools/ToastComponent";
 import { ItemsTYPE } from "../types/itensType";
 
 type ChangeConferidoType = {
@@ -19,10 +18,11 @@ export default function ChangeConferido({
     const [qtdConferido, setQtdConferido] = useState(0);
 
     const toast = useToast({
-        duration: 1500,
+        duration: 3000,
         isClosable: true,
         containerStyle: {
             color: "white",
+            textStyle: "BarlowRegular",
         },
     });
 

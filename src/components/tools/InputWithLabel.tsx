@@ -26,11 +26,12 @@ export default function InputWithLabel({
                 ml={"20px"}
                 textColor={"#ABB4BD"}
             >
-                <Text fontFamily={"Arial"} fontSize={"11px"}>
+                <Text fontFamily={"BarlowBold"} fontSize={"11px"}>
                     {text}
                 </Text>
             </Flex>
             <Input
+                fontFamily={"BarlowRegular"}
                 disabled={isDisabled === true ? true : false}
                 w={"250px"}
                 borderColor={borderColor ? "red" : "gray.200"}

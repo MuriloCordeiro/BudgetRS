@@ -54,10 +54,11 @@ export default function ModalConfFinished({
     }
 
     const toast = useToast({
-        duration: 1500,
+        duration: 3000,
         isClosable: true,
         containerStyle: {
             color: "white",
+            textStyle: "BarlowRegular",
         },
     });
 

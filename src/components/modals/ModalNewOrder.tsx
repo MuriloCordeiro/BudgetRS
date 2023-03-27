@@ -13,18 +13,12 @@ import {
 } from "@chakra-ui/react";
 
 type ModalComponentType = {
-    Title: string;
-    Phrase: string | null;
-    TextButton?: string;
     isOpen: any;
     onClose: any;
     func?: any;
 };
 
-export default function ModalComponent({
-    Title,
-    Phrase,
-    TextButton,
+export default function ModalNewOrder({
     isOpen,
     onClose,
     func,
@@ -37,10 +31,10 @@ export default function ModalComponent({
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>{Title}</ModalHeader>
+                    <ModalHeader>Title</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Text>{Phrase}</Text>
+                        <Text>Phrase</Text>
                     </ModalBody>
 
                     <ModalFooter>
@@ -52,18 +46,16 @@ export default function ModalComponent({
                             >
                                 Voltar
                             </Button>
-                            {TextButton && (
-                                <Button
-                                    variant="outline"
-                                    colorScheme={"red"}
-                                    onClick={() => {
-                                        func();
-                                        onClose();
-                                    }}
-                                >
-                                    {TextButton}
-                                </Button>
-                            )}
+                            <Button
+                                variant="outline"
+                                colorScheme={"red"}
+                                onClick={() => {
+                                    func();
+                                    onClose();
+                                }}
+                            >
+                                TextButton
+                            </Button>
                         </Flex>
                     </ModalFooter>
                 </ModalContent>
