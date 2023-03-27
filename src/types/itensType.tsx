@@ -18,7 +18,6 @@ export interface ItemsTYPE {
 
 export interface General {
     ordertype: string;
-    checked: number;
     orderId: string;
 }
 
@@ -31,4 +30,8 @@ export interface Order {
     orderType: string;
     address1: null | string;
     address2: null | string;
+    checked: number;
+    city: string;
+    UF: string;
+    shippingCompany: string;
 }

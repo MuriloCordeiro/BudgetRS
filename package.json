@@ -6,7 +6,9 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "prod": "vercel teams switch pneufree & vercel link -p expeditionrsfrontend --yes & vercel --prod --yes --scope pneufree",
+        "prod-linux": "vercel teams switch pneufree; vercel link -p expeditionrsfrontend --yes; vercel --prod --yes --scope pneufree"
     },
     "dependencies": {
         "@chakra-ui/react": "^2.4.1",

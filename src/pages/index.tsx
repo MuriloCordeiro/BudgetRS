@@ -7,11 +7,11 @@ import {
     useDisclosure,
     useToast,
     Spinner,
+    Text,
 } from "@chakra-ui/react";
 import animationLoading from "../animations/99109-loading.json";
 
 import HeaderDesk from "../components/header/HeaderDesk";
-import HeaderConferencia from "../components/conferencia/HeaderConferencia";
 import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
@@ -41,6 +41,7 @@ export default function Scanner() {
     const [initialTime, setInitialTime] = useState("");
     const [colorBorder, setColorBorder] = useState(false);
 
+    console.log("itens", itens);
     // useEffect(() => {
     //     const res = itens?.every((prod) => prod?.qty === prod?.Conferido)
     //     res === true ? setIsAllChecked(true) : setIsAllChecked(false)
@@ -115,42 +116,44 @@ export default function Scanner() {
         },
     };
 
-    // function handleScanner() {
-    //     const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
-    //     if (itens !== null) {
-    //         const result = itens.some(checkEAN);
+    function handleScanner() {
+        const checkEAN = (Mock: any) => Mock.EAN === barcodeScan;
+        if (itens !== null) {
+            const newArrayItens = { ...itens };
+            const result = newArrayItens?.orders.some(checkEAN);
 
-    //         if (verifyScanner === true && result === true) {
-    //             const mappedMock = itens?.map((prod) => {
-    //                 if (prod?.barcode && prod?.barcode === barcodeScan) {
-    //                     setBarcodeScan(null);
-    //                     if (
-    //                         prod?.barcode === barcodeScan &&
-    //                         prod?.CONFERIDO + 1 > prod?qtd
-    //                     ) {
-    //                         setErrorMessage(true);
-    //                         setEanError(prod?.barcode);
-    //                         setQtd(prod?.qtd);
-    //                         setChecked(prod?.CONFERIDO + 1);
-    //                         setVerifyScanner(false);
-    //                         // fetch("https://localhost:5001/ExpeditionScannerAPI");
+            if (verifyScanner === true && result === true) {
+                const mappedMock = newArrayItens?.orders?.map((prod) => {
+                    if (prod?.barcode && prod?.barcode === barcodeScan) {
+                        setBarcodeScan(null);
+                        if (
+                            prod?.barcode === barcodeScan &&
+                            prod?.checked + 1 > prod?.qty
+                        ) {
+                            setErrorMessage(true);
+                            setEanError(prod?.barcode);
+                            setQtd(prod?.qty);
+                            setChecked(prod?.checked + 1);
+                            setVerifyScanner(false);
+                            // fetch("https://localhost:5001/ExpeditionScannerAPI");
 
-    //                         return prod;
-    //                     } else {
-    //                         return { ...prod, CONFERIDO: prod.CONFERIDO + 1 };
-    //                     }
-    //                 } else {
-    //                     setBarcodeScan(null);
-    //                     return prod;
-    //                 }
-    //             });
-    //             setItens(mappedMock);
-    //         } else if (verifyScanner === true) {
-    //             setBarcodeScan(null);
-    //             // fetch("https://localhost:5001/ExpeditionScannerAPI");
-    //         }
-    //     }
-    // }
+                            return prod;
+                        } else {
+                            return { ...prod, checked: prod.checked + 1 };
+                        }
+                    } else {
+                        setBarcodeScan(null);
+                        return prod;
+                    }
+                });
+                newArrayItens.orders = mappedMock;
+                setItens(newArrayItens);
+            } else if (verifyScanner === true) {
+                setBarcodeScan(null);
+                // fetch("https://localhost:5001/ExpeditionScannerAPI");
+            }
+        }
+    }
 
     useEffect(() => {
         if (barcodeScan !== null) {
@@ -301,6 +304,7 @@ export default function Scanner() {
                                 w="100px"
                                 bgColor={"#005F27"}
                                 color="white"
+                                textStyle={"Regular"}
                                 _hover={{
                                     bgColor: "#083b19",
                                 }}
@@ -310,6 +314,8 @@ export default function Scanner() {
                             >
                                 Buscar
                             </Button>
+                            <Text textStyle={"Regular"}>teste1</Text>
+                            <Text textStyle={"Bold"}>teste2</Text>
                             <Flex w={"50%"}>
                                 <Button
                                     // isDisabled={verifyScanner ? true : false}
@@ -317,11 +323,13 @@ export default function Scanner() {
                                     w="full"
                                     bgColor={"#005F27"}
                                     color="white"
+                                    textStyle={"Bold"}
                                     _hover={{
                                         bgColor: "#083b19",
                                     }}
                                     onClick={() => {
                                         validateConf();
+                                        handleScanner();
                                     }}
                                     disabled={
                                         itens !== null && !verifyScanner
@@ -505,4 +513,7 @@ export default function Scanner() {
             />
         </Flex>
     );
+}
+function setErrorMessage(arg0: boolean) {
+    throw new Error("Function not implemented.");
 }

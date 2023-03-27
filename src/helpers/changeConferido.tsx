@@ -1,11 +1,13 @@
-import { Flex, Input, Button } from "@chakra-ui/react";
+import { Flex, Input, Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
+import ToastComponent from "../components/tools/ToastComponent";
+import { ItemsTYPE } from "../types/itensType";
 
 type ChangeConferidoType = {
     index: any;
-    arrayItens: any[];
+    arrayItens: ItemsTYPE;
     setArrayItens: any;
 };
 
@@ -16,17 +18,36 @@ export default function ChangeConferido({
 }: ChangeConferidoType) {
     const [qtdConferido, setQtdConferido] = useState(0);
 
+    const toast = useToast({
+        duration: 1500,
+        isClosable: true,
+        containerStyle: {
+            color: "white",
+        },
+    });
+
     function changeConferidoQTD() {
-        const newArrayItens = arrayItens;
-        const teste = newArrayItens.map((prod, i) => {
+        const newArrayItens = { ...arrayItens };
+        const teste = newArrayItens?.orders.map((prod, i) => {
             if (i === index) {
-                return { ...prod, CONFERIDO: qtdConferido };
+                if (qtdConferido > prod?.qty) {
+                    toast({
+                        title: "Atualização negada",
+                        description:
+                            "A quantidade do conferido não pode ser maior que a quantidade.",
+                        status: "error",
+                    });
+                    return prod;
+                } else {
+                    return { ...prod, checked: qtdConferido };
+                }
             } else {
                 return prod;
             }
         });
+        newArrayItens.orders = teste;
 
-        setArrayItens(teste);
+        setArrayItens(newArrayItens);
     }
 
     return (

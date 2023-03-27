@@ -71,27 +71,27 @@ export default function TableComponent({
                                 {prod?.barcode ? prod?.barcode : "-"}
                             </Td>
                             <Td w="9%">{prod?.qty}</Td>
-                            <Td w="10%">{0}</Td>
-                            <Td w="5%">{"0%"}</Td>
-                            {/* <Td w="10%">
-                                {prod?.barcode.length === 0 &&
-                                prod?.CONFERIDO !== prod?.QTD ? (
+                            {/* <Td w="10%">{0}</Td>
+                            <Td w="5%">{"0%"}</Td> */}
+                            <Td w="10%">
+                                {prod?.barcode === null &&
+                                prod?.checked !== prod?.qty ? (
                                     <ChangeConferido
                                         arrayItens={arrayItens}
                                         setArrayItens={setArrayItens}
                                         index={index}
                                     />
                                 ) : (
-                                    prod?.CONFERIDO
+                                    prod?.checked
                                 )}
-                            </Td> */}
-                            {/* <Td w="5%">
+                            </Td>
+                            <Td w="5%">
                                 <Text
                                     textAlign={"center"}
                                     bg={
                                         calcularPorcentagem(
-                                            prod?.QTD,
-                                            prod?.CONFERIDO
+                                            prod?.qty,
+                                            prod?.checked
                                         ) === 100
                                             ? "#005F27"
                                             : "#F9B000"
@@ -102,12 +102,12 @@ export default function TableComponent({
                                     textColor={"white"}
                                 >
                                     {calcularPorcentagem(
-                                        prod?.QTD,
-                                        prod?.CONFERIDO
+                                        prod?.qty,
+                                        prod?.checked
                                     )}
                                     %
                                 </Text>
-                            </Td> */}
+                            </Td>
                         </Tr>
                     ))}
                 </Tbody>
