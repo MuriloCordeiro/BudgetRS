@@ -15,6 +15,7 @@ import {
     Thead,
     Tr,
     Checkbox,
+    useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
@@ -37,26 +38,80 @@ export default function ModalNewOrder({
     const [checkedProduct, setCheckedProduct] = useState<any[]>([]);
     const [product, setProduct] = useState<any[]>(checkedProduct);
     const [isLoading, setIsLoading] = useState(false);
+
+    const toast = useToast({
+        duration: 3000,
+        isClosable: true,
+        containerStyle: {
+            textStyle: "BarlowRegular",
+            color: "white",
+        },
+    });
+
     const loadingDefaultOptions = {
         loop: true,
         isAutoPlay: false,
         animationData: SearchLottie,
-        rendererSettings: {
-            // preserveAspectRatio: "xMidYMid slice",
-        },
+        rendererSettings: {},
     };
 
     async function findProduct() {
         setIsLoading(true);
         const response = await getProductById(itemId);
-        console.log("response", response?.data);
-        setProduct([...checkedProduct, response?.data]);
+        console.log("response", response);
+        if (response !== undefined) {
+            if (product.length === 0) {
+                setProduct([response?.data, ...checkedProduct]);
+            } else if (
+                product.every(
+                    (prod) => prod?.itemCode !== response?.data?.itemCode
+                )
+            ) {
+                setProduct([response?.data, ...checkedProduct]);
+            } else {
+                toast({
+                    title: "Produto já selecionado",
+                    status: "warning",
+                });
+                setProduct(checkedProduct);
+            }
+        } else {
+            toast({
+                title: "Item não encontrado",
+                status: "error",
+            });
+        }
+        setItemId("");
         setIsLoading(false);
     }
 
-    useEffect(() => {
-        console.log("product", product.length);
-    }, [product]);
+    // useEffect(() => {
+    //     console.log("product", product);
+    //     console.log("checkedProduct", checkedProduct);
+    // }, [product, checkedProduct]);
+
+    function checkIsChecked(id: string) {
+        if (checkedProduct.some((prod) => prod?.itemCode === id)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function handleProductCheck(id: string, checked: boolean) {
+        console.log("teste", id, checked);
+
+        // const isChecked = product.filter((prod) => prod?.itemCode === id);
+
+        if (checked) {
+            setCheckedProduct(product);
+        } else {
+            const newChecked = checkedProduct.filter(
+                (prod) => prod?.itemCode !== id
+            );
+            setCheckedProduct([...newChecked]);
+        }
+    }
 
     return (
         <>
@@ -69,7 +124,7 @@ export default function ModalNewOrder({
                         Buscar itens por ID
                     </ModalHeader>
                     <ModalBody>
-                        <Flex w={"100%"} direction="column" h={"350px"}>
+                        <Flex w={"100%"} direction="column" minH={"400px"}>
                             <Flex gap={"1rem"}>
                                 <InputWithLabel
                                     isDisabled={isLoading}
@@ -104,7 +159,7 @@ export default function ModalNewOrder({
                                         <Flex
                                             mb={"10px"}
                                             w={"100%"}
-
+                                            textStyle={"BarlowBold"}
                                             // justify={"space-around"}
                                         >
                                             <Flex w={"20%"} justify="center">
@@ -126,6 +181,7 @@ export default function ModalNewOrder({
                                                 padding={"5px"}
                                                 borderRadius={"5px"}
                                                 mb={"5px"}
+                                                textStyle={"BarlowRegular"}
                                             >
                                                 <Flex
                                                     w={"20%"}
@@ -135,6 +191,16 @@ export default function ModalNewOrder({
                                                         colorScheme={"red"}
                                                         borderColor={"gray.600"}
                                                         value={prod?.itemCode}
+                                                        isChecked={checkIsChecked(
+                                                            prod?.itemCode
+                                                        )}
+                                                        onChange={(event) =>
+                                                            handleProductCheck(
+                                                                prod?.itemCode,
+                                                                event.target
+                                                                    .checked
+                                                            )
+                                                        }
                                                     />
                                                     <Text alignSelf={"center"}>
                                                         {prod?.itemCode}
@@ -165,23 +231,6 @@ export default function ModalNewOrder({
                                                 </Flex>
                                             </Flex>
                                         ))}
-                                        <Flex
-                                            w={"100%"}
-                                            bg={"#D9D9D9"}
-                                            padding={"5px"}
-                                            borderRadius={"5px"}
-                                            mb={"5px"}
-                                        >
-                                            <Flex w={"15%"} justify="center">
-                                                <Text>prod?.itemCode</Text>
-                                            </Flex>
-                                            <Flex w={"60%"} justify="center">
-                                                <Text>prod?.description</Text>
-                                            </Flex>
-                                            <Flex w={"20%"} justify="center">
-                                                <Text>prod?.barcode</Text>
-                                            </Flex>
-                                        </Flex>
                                     </Flex>
                                 </>
                             ) : (

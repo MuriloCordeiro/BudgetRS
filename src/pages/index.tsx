@@ -43,7 +43,7 @@ export default function Scanner() {
     const [initialTime, setInitialTime] = useState("");
     const [colorBorder, setColorBorder] = useState(false);
 
-    console.log("itens", itens);
+    // console.log("itens", itens);
     useEffect(() => {
         const res = itens?.orders.every((prod) => prod?.qty === prod?.checked);
         res === true ? setIsAllChecked(true) : setIsAllChecked(false);
@@ -121,15 +121,6 @@ export default function Scanner() {
         onOpen: onOpenNewOrder,
         onClose: onCloseNewOrder,
     } = useDisclosure();
-
-    const loadingDefaultOptions = {
-        loop: true,
-        autoplay: true,
-        animationData: animationLoading,
-        rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice",
-        },
-    };
 
     function handleScanner() {
         const checkEAN = (Mock: any) => Mock.barcode === barcodeScan;
@@ -509,19 +500,6 @@ export default function Scanner() {
                             opacity={loading ? "70%" : "20%"}
                             // display={whenIsLoading}
                         />
-                        <Button
-                            fontSize={"12px"}
-                            w="208px"
-                            mr="1rem"
-                            bgColor="#339CD8"
-                            color="white"
-                            textStyle={"MontserratBold"}
-                            colorScheme={"blue"}
-                            // disabled={orderType ? false : true}
-                            onClick={() => onOpenNewOrder()}
-                        >
-                            ADICIONAR ITEM
-                        </Button>
                         <Spinner
                             thickness="10px"
                             speed="0.65s"
@@ -535,15 +513,6 @@ export default function Scanner() {
                     </Flex>
                 )}
             </Flex>
-
-            {/* <ModalError
-                checked={checked}
-                eanError={eanError}
-                errorMessage={errorMessage}
-                onCloseError={onCloseError}
-                qtd={qtd}
-                setErrorMessage={setErrorMessage}
-            /> */}
             <ModalPrint isOpen={isOpenPrinter} onClose={onClosePrinter} />
             <ModalNewOrder isOpen={isOpenNewOrder} onClose={onCloseNewOrder} />
             <ModalComponent
