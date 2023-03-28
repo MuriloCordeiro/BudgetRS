@@ -304,8 +304,9 @@ export default function Scanner() {
                         justify="space-evenly"
                         paddingBottom={"10px"}
                         borderBottom={"2px solid #E2E8F0"}
+                        gap="1rem"
                     >
-                        <Flex>
+                        <Flex gap="1rem">
                             <InputWithLabel
                                 value={numeroPedido}
                                 setValue={setNumeroPedido}
