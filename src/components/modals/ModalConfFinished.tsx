@@ -69,12 +69,12 @@ export default function ModalConfFinished({
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader fontFamily={"Poppins"} fontWeight={400}>
+                    <ModalHeader textStyle={"Bold"}>
                         Concluir Separação
                     </ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody textAlign={"center"}>
-                        {!isAllChecked && (
+                    <ModalBody textAlign={"center"} textStyle={"Regular"}>
+                        {/* {!isAllChecked && (
                             <Text
                                 mb={"20px"}
                                 padding={"5px"}
@@ -83,11 +83,36 @@ export default function ModalConfFinished({
                             >
                                 Nem todos os pedidos foram conferidos
                             </Text>
-                        )}
-                        <Text mb={"20px"}>
+                        )} */}
+                        <Text mb={"20px"} fontSize="16px">
                             Deseja concluir a separaçao do pedido{" "}
                             {itens?.general?.orderId} ?
                         </Text>
+
+                        <Text
+                            mb={"20px"}
+                            fontSize={"14px"}
+                            bg={"#FC0000"}
+                            paddingY={"5px"}
+                            paddingX={"15px"}
+                            textColor={"white"}
+                            borderRadius={"5px"}
+                        >
+                            AVISO: Essa ação é irreversível. Tenha certeza.
+                        </Text>
+                        {!isAllChecked && (
+                            <Text
+                                mb={"20px"}
+                                fontSize={"14px"}
+                                bg={"#F9B000"}
+                                paddingY={"5px"}
+                                paddingX={"15px"}
+                                textColor={"white"}
+                                borderRadius={"5px"}
+                            >
+                                AVISO: Nem todos os pedidos foram conferidos.
+                            </Text>
+                        )}
                         <Button
                             variant="outline"
                             textColor={"black"}
@@ -104,34 +129,36 @@ export default function ModalConfFinished({
                                 ? "IMPRIMIR ITENS PENDENTES"
                                 : "GERAR ETIQUETAS"}
                         </Button>
-                        <Text>
-                            Para concluir a conferencia digite o numero do
-                            pedido - {itens?.general?.orderId}
-                        </Text>
-                        <Input
-                            value={orderNumber}
-                            onChange={(e) => setOrderNumber(e.target.value)}
-                        />
+                        <Flex direction={"column"}>
+                            <Text>
+                                Escreva o número do pedido para continuar.
+                            </Text>
+                            <Input
+                                value={orderNumber}
+                                onChange={(e) => setOrderNumber(e.target.value)}
+                            />
+                        </Flex>
                     </ModalBody>
 
                     <ModalFooter>
                         <Flex w={"100%"} justify={"space-between"}>
                             <Button
-                                colorScheme="orange"
                                 mr={3}
+                                bg={"#E30613"}
+                                textColor={"white"}
+                                _hover={{ opacity: "70%" }}
                                 onClick={onClose}
                             >
-                                Voltar
+                                Cancelar
                             </Button>
 
                             <Button
-                                variant="outline"
                                 colorScheme={"gren"}
-                                textColor={"#005F27"}
+                                bg={"#005F27"}
                                 _hover={{ opacity: "70%" }}
                                 onClick={() => finishConf()}
                             >
-                                Confirmar
+                                Concluir
                             </Button>
                         </Flex>
                     </ModalFooter>
