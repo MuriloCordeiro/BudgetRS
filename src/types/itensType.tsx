@@ -34,4 +34,5 @@ export interface Order {
     city: string;
     UF: string;
     shippingCompany: string;
+    remaining: boolean;
 }

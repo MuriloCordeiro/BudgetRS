@@ -10,7 +10,10 @@ import {
     Input,
     Button,
     Flex,
+    Tooltip,
+    background,
 } from "@chakra-ui/react";
+import { BsTrash } from "react-icons/bs";
 import ChangeConferido from "../../helpers/changeConferido";
 import { ItemsTYPE } from "../../types/itensType";
 
@@ -28,6 +31,17 @@ export default function TableComponent({
         return Number(porcentagem.toFixed(2));
     }
 
+    function deleteRemaningIten(id: string, isRemaing: boolean) {
+        const itens = { ...arrayItens };
+        const deleteItem = itens?.orders?.filter(
+            (prod) => prod?.itemCode !== id && isRemaing === true
+        );
+
+        itens.orders = deleteItem;
+
+        setArrayItens(itens);
+    }
+
     return (
         <TableContainer mt="160px" paddingX="2rem" paddingY="3.5rem">
             <Table variant="striped" size="md">
@@ -40,13 +54,15 @@ export default function TableComponent({
                         zIndex={1}
                     >
                         <Flex w={"100%"}>
-                            <Th w="10%">itemID</Th>
+                            <Th w="5%"></Th>
+                            <Th w="7%">itemID</Th>
                             <Th w="32.5%">ITENS</Th>
                             <Th w="5%">END 1</Th>
-                            <Th w="9%">END 2</Th>
-                            <Th w="17%">EAN</Th>
-                            <Th w="9%">QTD</Th>
-                            <Th w="10%">CONFERIDO</Th>
+                            <Th w="5%">END 2</Th>
+                            <Th w="7%">CID/EST</Th>
+                            <Th w="10%">EAN</Th>
+                            <Th w="8%">QTD</Th>
+                            <Th w="12%">CONFERIDO</Th>
                             <Th w="5%">%</Th>
                         </Flex>
                     </Tr>
@@ -55,25 +71,62 @@ export default function TableComponent({
                 <Tbody fontFamily={"Arial"}>
                     {arrayItens?.orders.map((prod, index) => (
                         <Tr key={index}>
-                            <Td w="10%">{prod?.itemCode}</Td>
+                            <Td w="3%">
+                                <BsTrash
+                                    visibility={
+                                        prod?.remaining ? "visible" : "hidden"
+                                    }
+                                    cursor={"pointer"}
+                                    onClick={() =>
+                                        deleteRemaningIten(
+                                            prod?.itemCode,
+                                            prod?.remaining
+                                        )
+                                    }
+                                />
+                            </Td>
+                            <Td w="10%">
+                                <Tooltip
+                                    fontFamily={"Arial"}
+                                    label={
+                                        prod?.remaining
+                                            ? "Este é um item pendente"
+                                            : ""
+                                    }
+                                    borderRadius={"15px"}
+                                >
+                                    <Text
+                                        cursor={
+                                            prod?.remaining ? "help" : "false"
+                                        }
+                                        textAlign={"center"}
+                                        bgColor={
+                                            prod?.remaining ? "#F9B000" : "none"
+                                        }
+                                        padding={"5px"}
+                                        borderRadius={"15px"}
+                                    >
+                                        {prod?.itemCode}
+                                    </Text>
+                                </Tooltip>
+                            </Td>
                             <Td w="34%">{prod?.description}</Td>
                             <Td w="5%">
                                 {prod?.address1
                                     ? prod?.address1.replace(/\|/g, "")
                                     : "-"}
                             </Td>
-                            <Td w="9%">
+                            <Td w="5%">
                                 {prod?.address2
                                     ? prod?.address2.replace(/\|/g, "")
                                     : "-"}
                             </Td>
-                            <Td w="19%">
+                            <Td w="6%">{prod?.city ? prod?.city : "-"}</Td>
+                            <Td w="11%">
                                 {prod?.barcode ? prod?.barcode : "-"}
                             </Td>
-                            <Td w="9%">{prod?.qty}</Td>
-                            {/* <Td w="10%">{0}</Td>
-                            <Td w="5%">{"0%"}</Td> */}
-                            <Td w="10%">
+                            <Td w="12%">{prod?.qty}</Td>
+                            <Td w="12%">
                                 {prod?.barcode === null &&
                                 prod?.checked !== prod?.qty ? (
                                     <ChangeConferido

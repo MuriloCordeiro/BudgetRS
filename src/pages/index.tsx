@@ -16,7 +16,7 @@ import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
 import { getSoapData } from "../hooks/getSoapData";
-import { ItemsTYPE } from "../types/itensType";
+import { ItemsTYPE, Order } from "../types/itensType";
 import ModalComponent from "../components/modals/ModalComponent";
 import { postSoapData } from "../hooks/post/postSoapData";
 import InputWithLabel from "../components/tools/InputWithLabel";
@@ -272,6 +272,12 @@ export default function Scanner() {
         //acontece
     }
 
+    function remaingItens(checkedItens: Order[]) {
+        const newArrayItens = itens;
+        newArrayItens?.orders.push(...checkedItens);
+        setItens(newArrayItens);
+    }
+
     return (
         <Flex height="100vh" display="flex" flexDirection="column">
             <Flex direction="column">
@@ -514,7 +520,12 @@ export default function Scanner() {
                 )}
             </Flex>
             <ModalPrint isOpen={isOpenPrinter} onClose={onClosePrinter} />
-            <ModalNewOrder isOpen={isOpenNewOrder} onClose={onCloseNewOrder} />
+            <ModalNewOrder
+                isOpen={isOpenNewOrder}
+                onClose={onCloseNewOrder}
+                func={remaingItens}
+                itens={itens}
+            />
             <ModalComponent
                 Title={`Nova conferencia`}
                 Phrase={`CONFERENCIA DO PEDIDO ${numeroPedido} NÃO FOI CONCLUIDA, DESEJA BUSCAR OUTRO PEDIDO?`}

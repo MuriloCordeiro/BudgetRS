@@ -43,7 +43,7 @@ export const defaultTheme = extendTheme({
         },
 
         yellow: {
-            "900": "#FCE500",
+            "900": "#FFBA49",
             "50": "#FFF5E5",
         },
 

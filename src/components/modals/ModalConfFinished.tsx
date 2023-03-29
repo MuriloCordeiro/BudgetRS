@@ -69,7 +69,9 @@ export default function ModalConfFinished({
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Concluir Conferencia</ModalHeader>
+                    <ModalHeader fontFamily={"Poppins"} fontWeight={400}>
+                        Concluir Separação
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody textAlign={"center"}>
                         {!isAllChecked && (
@@ -83,7 +85,7 @@ export default function ModalConfFinished({
                             </Text>
                         )}
                         <Text mb={"20px"}>
-                            Deseja concluir a conferencia do pedido
+                            Deseja concluir a separaçao do pedido{" "}
                             {itens?.general?.orderId} ?
                         </Text>
                         <Button
