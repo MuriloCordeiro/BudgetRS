@@ -66,25 +66,15 @@ export default function ModalConfFinished({
         <>
             {/* <Button onClick={onOpen}>Open Modal</Button> */}
 
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose} size={"xl"}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader textStyle={"Bold"}>
+                    <ModalHeader fontSize="25px" textStyle={"Bold"}>
                         Concluir Separação
                     </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody textAlign={"center"} textStyle={"Regular"}>
-                        {/* {!isAllChecked && (
-                            <Text
-                                mb={"20px"}
-                                padding={"5px"}
-                                border={"1px solid orange"}
-                                borderRadius="15px"
-                            >
-                                Nem todos os pedidos foram conferidos
-                            </Text>
-                        )} */}
-                        <Text mb={"20px"} fontSize="16px">
+                        <Text mb={"20px"} fontSize="20px">
                             Deseja concluir a separaçao do pedido{" "}
                             {itens?.general?.orderId} ?
                         </Text>
@@ -93,7 +83,7 @@ export default function ModalConfFinished({
                             mb={"20px"}
                             fontSize={"14px"}
                             bg={"#FC0000"}
-                            paddingY={"5px"}
+                            paddingY={"10px"}
                             paddingX={"15px"}
                             textColor={"white"}
                             borderRadius={"5px"}
@@ -105,7 +95,7 @@ export default function ModalConfFinished({
                                 mb={"20px"}
                                 fontSize={"14px"}
                                 bg={"#F9B000"}
-                                paddingY={"5px"}
+                                paddingY={"10px"}
                                 paddingX={"15px"}
                                 textColor={"white"}
                                 borderRadius={"5px"}
@@ -129,11 +119,13 @@ export default function ModalConfFinished({
                                 ? "IMPRIMIR ITENS PENDENTES"
                                 : "GERAR ETIQUETAS"}
                         </Button>
-                        <Flex direction={"column"}>
+                        <Flex direction={"column"} align={"flex-start"}>
                             <Text>
                                 Escreva o número do pedido para continuar.
                             </Text>
                             <Input
+                                borderRadius={"15px"}
+                                h="45px"
                                 value={orderNumber}
                                 onChange={(e) => setOrderNumber(e.target.value)}
                             />

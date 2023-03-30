@@ -348,7 +348,6 @@ export default function Scanner() {
                             >
                                 BUSCAR
                             </Button>
-                            <Text textStyle={"Regular"}>teste</Text>
                             <Flex w={"50%"}>
                                 <Button
                                     // isDisabled={verifyScanner ? true : false}
