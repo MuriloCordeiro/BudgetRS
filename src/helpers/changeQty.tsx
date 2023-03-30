@@ -2,74 +2,72 @@ import { Flex, Input, Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
-import { ItemsTYPE } from "../types/itensType";
+import { ItemsTYPE, Order } from "../types/itensType";
 
 type ChangeConferidoType = {
     index: any;
-    arrayItens: ItemsTYPE;
+    arrayItens: Order[];
     setArrayItens: any;
+    id: string;
+    checkedProduct: Order[];
+    setCheckedProduct: any;
 };
 
-export default function ChangeConferido({
+export default function ChangeQty({
     arrayItens,
     setArrayItens,
     index,
+    id,
+    checkedProduct,
+    setCheckedProduct,
 }: ChangeConferidoType) {
     const [qtdConferido, setQtdConferido] = useState(0);
 
-    const toast = useToast({
-        duration: 3000,
-        isClosable: true,
-        containerStyle: {
-            color: "white",
-            textStyle: "BarlowRegular",
-        },
-    });
-
     function changeConferidoQTD() {
-        const newArrayItens = { ...arrayItens };
-        const teste = newArrayItens?.orders.map((prod, i) => {
+        let newArrayItens = arrayItens;
+        let newCheckedProduct = checkedProduct;
+        const teste = newArrayItens?.map((prod, i) => {
             if (i === index) {
-                if (qtdConferido > prod?.qty) {
-                    toast({
-                        title: "Atualização negada",
-                        description:
-                            "A quantidade do conferido não pode ser maior que a quantidade.",
-                        status: "error",
-                    });
-                    return prod;
-                } else {
-                    return { ...prod, checked: qtdConferido };
-                }
+                return { ...prod, qty: qtdConferido };
             } else {
                 return prod;
             }
         });
-        newArrayItens.orders = teste;
 
-        setArrayItens(newArrayItens);
+        const teste1 = newCheckedProduct?.map((prod, i) => {
+            if (prod?.itemCode === id) {
+                return { ...prod, qty: qtdConferido };
+            } else {
+                return prod;
+            }
+        });
+
+        setArrayItens(teste);
+        setCheckedProduct(teste1);
     }
 
     return (
         <Flex w={"100%"} justify={"start"}>
             <Input
-                ml={"-10px"}
+                // ml={"-10px"}
                 type={"number"}
                 w={"45px"}
                 size={"sm"}
                 value={qtdConferido === 0 ? "" : qtdConferido}
                 border={"none"}
                 borderBottom={".5px solid black"}
+                // borderRadius={"15px"}
+                // bg={"white"}
                 _focusVisible={{ borderBottom: "1px solid black" }}
                 onChange={(e) => setQtdConferido(parseInt(e.target.value))}
             />
             <Flex
                 ml={"15px"}
+                w={"80px"}
+                gap={"10px"}
                 align={"center"}
                 justify={"space-evenly"}
-                w={"80px"}
                 display={qtdConferido > 0 ? "flex" : "none"}
-                gap={"10px"}
             >
                 <BsCheck
                     size={"25px"}

@@ -16,16 +16,18 @@ import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
 import { getSoapData } from "../hooks/getSoapData";
-import { ItemsTYPE } from "../types/itensType";
+import { ItemsTYPE, Order } from "../types/itensType";
 import ModalComponent from "../components/modals/ModalComponent";
 import { postSoapData } from "../hooks/post/postSoapData";
 import InputWithLabel from "../components/tools/InputWithLabel";
 import ModalConfFinished from "../components/modals/ModalConfFinished";
+import ModalNewOrder from "../components/modals/ModalNewOrder";
 
 export default function Scanner() {
   const [barcodeScan, setBarcodeScan] = useState<any>(
     "Nenhum código de barra escaneado"
   );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [verifyScanner, setVerifyScanner] = useState<Boolean>();
   const [eanError, setEanError] = useState<string>();
   const [qtd, setQtd] = useState<any>();
@@ -41,7 +43,7 @@ export default function Scanner() {
   const [initialTime, setInitialTime] = useState("");
   const [colorBorder, setColorBorder] = useState(false);
 
-  console.log("itens", itens);
+  // console.log("itens", itens);
   useEffect(() => {
     const res = itens?.orders.every((prod) => prod?.qty === prod?.checked);
     res === true ? setIsAllChecked(true) : setIsAllChecked(false);
@@ -75,9 +77,10 @@ export default function Scanner() {
   }
 
   const toast = useToast({
-    duration: 1500,
+    duration: 3000,
     isClosable: true,
     containerStyle: {
+      textStyle: "BarlowRegular",
       color: "white",
     },
   });
@@ -105,14 +108,17 @@ export default function Scanner() {
     onClose: onCloseCancelConferencia,
   } = useDisclosure();
 
-  const loadingDefaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationLoading,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+  const {
+    isOpen: isOpenNewSearch,
+    onOpen: onOpenNewSearch,
+    onClose: onCloseNewSearch,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenNewOrder,
+    onOpen: onOpenNewOrder,
+    onClose: onCloseNewOrder,
+  } = useDisclosure();
 
   function handleScanner() {
     const checkEAN = (Mock: any) => Mock.barcode === barcodeScan;
@@ -130,16 +136,21 @@ export default function Scanner() {
               prod?.barcode === barcodeScan &&
               prod?.checked + 1 > prod?.qty
             ) {
-              //   setErrorMessage(true);
+              setErrorMessage(`Você escaneou <b>${checked}</b> itens, porém a
+                            quantidade correta é <b>${qtd}</b>. Por favor,
+                            verifique novamente e tente escanear a quantidade de
+                            itens correta.`);
+              onOpenError();
               setEanError(prod?.barcode);
               setQtd(prod?.qty);
               setChecked(prod?.checked + 1);
               setVerifyScanner(false);
-              fetch("https://localhost:5001/ExpeditionScannerAPI");
+              // fetch(
+              //     "https://localhost:5001/ExpeditionScannerAPI"
+              // );
 
               return prod;
             } else {
-              console.log("CRL CHEGOU AQ", prod.checked + 1);
               return { ...prod, checked: prod.checked + 1 };
             }
           } else {
@@ -150,8 +161,12 @@ export default function Scanner() {
         newArrayItens.orders = mappedMock;
         setItens(newArrayItens);
       } else if (verifyScanner === true) {
+        setErrorMessage(
+          `Voce escaneou um pedido que não existe na lista de pedido Você escaneou o pedido ${barcodeScan}`
+        );
+        onOpenError();
         setBarcodeScan(null);
-        fetch("https://localhost:5001/ExpeditionScannerAPI");
+        // fetch("https://localhost:5001/ExpeditionScannerAPI");
       }
     }
   }
@@ -251,6 +266,12 @@ export default function Scanner() {
     //acontece
   }
 
+  function remaingItens(checkedItens: Order[]) {
+    const newArrayItens = itens;
+    newArrayItens?.orders.push(...checkedItens);
+    setItens(newArrayItens);
+  }
+
   return (
     <Flex height="100vh" display="flex" flexDirection="column">
       <Flex direction="column">
@@ -274,8 +295,9 @@ export default function Scanner() {
             justify="space-evenly"
             paddingBottom={"10px"}
             borderBottom={"2px solid #E2E8F0"}
+            gap="1rem"
           >
-            <Flex>
+            <Flex gap="1rem">
               <InputWithLabel
                 value={numeroPedido}
                 setValue={setNumeroPedido}
@@ -303,18 +325,21 @@ export default function Scanner() {
                 w="100px"
                 bgColor={"#005F27"}
                 color="white"
-                textStyle={"Regular"}
+                textStyle={"MontserratBold"}
+                fontSize={"12px"}
                 _hover={{
-                  bgColor: "#083b19",
+                  opacity: "80%",
                 }}
                 onClick={() => {
-                  findOrder(numeroPedido);
+                  if (itens === null) {
+                    findOrder(numeroPedido);
+                  } else {
+                    onOpenNewSearch();
+                  }
                 }}
               >
-                Buscar
+                BUSCAR
               </Button>
-              <Text textStyle={"Regular"}>teste1</Text>
-              <Text textStyle={"Bold"}>teste2</Text>
               <Flex w={"50%"}>
                 <Button
                   // isDisabled={verifyScanner ? true : false}
@@ -322,39 +347,35 @@ export default function Scanner() {
                   w="full"
                   bgColor={"#005F27"}
                   color="white"
-                  textStyle={"Bold"}
+                  textStyle={"MontserratBold"}
+                  fontSize={"12px"}
                   _hover={{
-                    bgColor: "#083b19",
+                    opacity: "80%",
                   }}
                   onClick={() => {
                     validateConf();
                     // handleScanner();
                   }}
-                  disabled={
-                    itens !== null && !verifyScanner
-                      ? // separador.length > 0 && conferente.length > 0
-                        //     ? false
-                        //     :
-                        false
-                      : true
-                  }
+                  disabled={itens !== null && !verifyScanner ? false : true}
                 >
-                  Iniciar conferência
+                  INICIAR CONFERÊNCIA
                 </Button>
 
                 <Button
                   isDisabled={!verifyScanner ? true : false}
                   w="full"
-                  bgColor={"red"}
+                  bgColor={"red.900"}
+                  textStyle={"MontserratBold"}
+                  fontSize={"12px"}
                   color="white"
                   _hover={{
-                    bgColor: "#b40505",
+                    opacity: "80%",
                   }}
                   onClick={() => {
                     onOpenCancelConferencia();
                   }}
                 >
-                  Cancelar conferencia
+                  CANCELAR CONFERÊNCIA
                 </Button>
               </Flex>
             </Flex>
@@ -390,6 +411,7 @@ export default function Scanner() {
                   fontSize={"12px"}
                   w="208px"
                   mr="1rem"
+                  textStyle={"MontserratBold"}
                   bgColor="#005F27"
                   color="white"
                   colorScheme={"green"}
@@ -403,9 +425,10 @@ export default function Scanner() {
                   mr="1rem"
                   bgColor="#339CD8"
                   color="white"
+                  textStyle={"MontserratBold"}
                   colorScheme={"blue"}
                   disabled={orderType ? false : true}
-                  onClick={() => resetItens()}
+                  onClick={() => onOpenNewOrder()}
                 >
                   ADICIONAR ITEM
                 </Button>
@@ -414,6 +437,7 @@ export default function Scanner() {
                   mr="1rem"
                   w="208px"
                   bgColor="#F9B000"
+                  textStyle={"MontserratBold"}
                   color="white"
                   colorScheme={"yellow"}
                   onClick={() => onOpenPrinter()}
@@ -428,6 +452,7 @@ export default function Scanner() {
                 justifySelf="end"
                 bgColor="#005F27"
                 color="white"
+                textStyle={"MontserratBold"}
                 colorScheme={"green"}
                 disabled={orderType ? false : isAllChecked ? false : true}
                 onClick={() => onOpenFinishConf()}
@@ -453,7 +478,6 @@ export default function Scanner() {
               opacity={loading ? "70%" : "20%"}
               // display={whenIsLoading}
             />
-
             <Spinner
               thickness="10px"
               speed="0.65s"
@@ -467,23 +491,24 @@ export default function Scanner() {
           </Flex>
         )}
       </Flex>
-
-      {/* <ModalError
-                checked={checked}
-                eanError={eanError}
-                errorMessage={errorMessage}
-                onCloseError={onCloseError}
-                qtd={qtd}
-                setErrorMessage={setErrorMessage}
-            /> */}
       <ModalPrint isOpen={isOpenPrinter} onClose={onClosePrinter} />
+      <ModalNewOrder
+        isOpen={isOpenNewOrder}
+        onClose={onCloseNewOrder}
+        func={remaingItens}
+        itens={itens}
+      />
+      <ModalComponent
+        Title={`Nova conferencia`}
+        Phrase={`CONFERENCIA DO PEDIDO ${numeroPedido} NÃO FOI CONCLUIDA, DESEJA BUSCAR OUTRO PEDIDO?`}
+        TextButton="Buscar"
+        func={() => findOrder(numeroPedido)}
+        isOpen={isOpenNewSearch}
+        onClose={onCloseNewSearch}
+      />
       <ModalComponent
         Title={` Erro! - ${eanError}`}
-        Phrase={`Você escaneou <b>${checked}</b> itens, porém a
-                            quantidade correta é <b>${qtd}</b>. Por favor,
-                            verifique novamente e tente escanear a quantidade de
-                            itens correta.`}
-        // TextButton="Cancelar"
+        Phrase={errorMessage}
         isOpen={isOpenError}
         onClose={onCloseError}
       />

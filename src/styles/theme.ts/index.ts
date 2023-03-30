@@ -1,12 +1,22 @@
 // AQUI HAVERA ALTERAÇÕES DE TEXTO, CORES, TAMANHOS DE FONTES, ESTILOS E LAYOUT
 
 import { extendTheme } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 
 const breakpoints = {
     base: "0rem",
     sm: "30rem", //480px
     md: "64rem", //1024px
     lg: "120rem", //1920px
+};
+
+const toastOptions = {
+    duration: 3000,
+    isClosable: true,
+    containerStyle: {
+        textStyle: "BarlowRegular",
+        color: "white",
+    },
 };
 
 export const defaultTheme = extendTheme({
@@ -33,7 +43,7 @@ export const defaultTheme = extendTheme({
         },
 
         yellow: {
-            "900": "#FCE500",
+            "900": "#FFBA49",
             "50": "#FFF5E5",
         },
 
@@ -44,8 +54,10 @@ export const defaultTheme = extendTheme({
         },
 
         red: {
-            "900": "#FF003A",
-            "100": "#FF95AD",
+            "900": "#E30613",
+            "700": "#C93832",
+            "500": "#F0433B",
+            "300": "#FF6058",
         },
     },
 
@@ -89,7 +101,22 @@ export const defaultTheme = extendTheme({
             fontFamily: "Poppins, Arial, sans-serif",
             fontWeight: "700",
         },
-
+        BarlowRegular: {
+            fontFamily: "Barlow, Arial, sans-serif",
+            fontWeight: "400",
+        },
+        BarlowMedium: {
+            fontFamily: "Barlow, Arial, sans-serif",
+            fontWeight: "600",
+        },
+        BarlowBold: {
+            fontFamily: "Barlow, Arial, sans-serif",
+            fontWeight: "700",
+        },
+        MontserratBold: {
+            fontFamily: "Montserrat, Arial, sans-serif",
+            fontWeight: "700",
+        },
         MLight: {
             fontFamily: "Poppins, Noto Sans, Arial, sans-serif",
         },
@@ -134,6 +161,7 @@ export const defaultTheme = extendTheme({
             letterSpacing: "0.3rem",
         },
     },
+    toast: toastOptions,
 
     styles: {
         global: {

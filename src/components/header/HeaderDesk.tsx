@@ -7,8 +7,7 @@ export default function HeaderDesk() {
                 align={"center"}
                 w={"50%"}
                 justify={"space-between"}
-                fontFamily={"Arial"}
-                fontWeight={"600"}
+                textStyle={"BarlowMedium"}
             >
                 <Flex>
                     <Image

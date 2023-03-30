@@ -1,9 +1,12 @@
-import { Input, Flex, Text } from "@chakra-ui/react";
+import { Input, Flex, Text, InputProps } from "@chakra-ui/react";
 
 type InputWithLabelType = {
     value: string | number;
     setValue: any;
     text: string;
+    width?: string;
+    textColor?: string;
+    fontSize?: string;
     isDisabled?: boolean;
     borderColor?: boolean;
 };
@@ -12,11 +15,14 @@ export default function InputWithLabel({
     value,
     setValue,
     text,
+    width,
+    fontSize,
+    textColor,
     isDisabled,
     borderColor,
 }: InputWithLabelType) {
     return (
-        <Flex mr={"1rem"}>
+        <Flex w={"full"}>
             <Flex
                 position={"absolute"}
                 bg={"white"}
@@ -24,15 +30,20 @@ export default function InputWithLabel({
                 mt={"-8px"}
                 zIndex={"10"}
                 ml={"20px"}
-                textColor={"#ABB4BD"}
+                textColor={textColor ? textColor : "#ABB4BD"}
             >
-                <Text fontFamily={"Arial"} fontSize={"11px"}>
+                <Text
+                    fontFamily={"BarlowBold"}
+                    fontSize={fontSize ? fontSize : "11px"}
+                >
                     {text}
                 </Text>
             </Flex>
             <Input
+                fontFamily={"BarlowRegular"}
                 disabled={isDisabled === true ? true : false}
-                w={"250px"}
+                w={width ? width : "250px"}
+                // w={"full"}
                 borderColor={borderColor ? "red" : "gray.200"}
                 _focusVisible={{
                     borderColor: "none",

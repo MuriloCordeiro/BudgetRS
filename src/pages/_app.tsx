@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ToastProvider } from "@chakra-ui/toast";
 import "../styles/global/global.scss";
 
 import { defaultTheme } from "../styles/theme.ts";

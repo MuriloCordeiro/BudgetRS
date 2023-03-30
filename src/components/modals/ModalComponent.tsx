@@ -14,7 +14,7 @@ import {
 
 type ModalComponentType = {
     Title: string;
-    Phrase: string;
+    Phrase: string | null;
     TextButton?: string;
     isOpen: any;
     onClose: any;
