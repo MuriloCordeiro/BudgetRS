@@ -16,7 +16,7 @@ import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
 import { getSoapData } from "../hooks/getSoapData";
-import { ItemsTYPE } from "../types/itensType";
+import { ItemsTYPE, Order } from "../types/itensType";
 import ModalComponent from "../components/modals/ModalComponent";
 import { postSoapData } from "../hooks/post/postSoapData";
 import InputWithLabel from "../components/tools/InputWithLabel";
@@ -43,7 +43,7 @@ export default function Scanner() {
   const [initialTime, setInitialTime] = useState("");
   const [colorBorder, setColorBorder] = useState(false);
 
-  console.log("itens", itens);
+  // console.log("itens", itens);
   useEffect(() => {
     const res = itens?.orders.every((prod) => prod?.qty === prod?.checked);
     res === true ? setIsAllChecked(true) : setIsAllChecked(false);
@@ -119,15 +119,6 @@ export default function Scanner() {
     onOpen: onOpenNewOrder,
     onClose: onCloseNewOrder,
   } = useDisclosure();
-
-  const loadingDefaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationLoading,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
 
   function handleScanner() {
     const checkEAN = (Mock: any) => Mock.barcode === barcodeScan;
@@ -275,6 +266,12 @@ export default function Scanner() {
     //acontece
   }
 
+  function remaingItens(checkedItens: Order[]) {
+    const newArrayItens = itens;
+    newArrayItens?.orders.push(...checkedItens);
+    setItens(newArrayItens);
+  }
+
   return (
     <Flex height="100vh" display="flex" flexDirection="column">
       <Flex direction="column">
@@ -322,13 +319,13 @@ export default function Scanner() {
               />
             </Flex>
             <Flex justify={"space-between"} w={"100%"}>
-              <Text textStyle="Regular">oi</Text>
               <Button
                 isDisabled={numeroPedido.length > 3 ? false : true}
                 mr="1rem"
                 w="100px"
                 bgColor={"#005F27"}
                 color="white"
+                textStyle={"MontserratBold"}
                 fontSize={"12px"}
                 _hover={{
                   opacity: "80%",
@@ -343,7 +340,6 @@ export default function Scanner() {
               >
                 BUSCAR
               </Button>
-
               <Flex w={"50%"}>
                 <Button
                   // isDisabled={verifyScanner ? true : false}
@@ -482,19 +478,6 @@ export default function Scanner() {
               opacity={loading ? "70%" : "20%"}
               // display={whenIsLoading}
             />
-            <Button
-              fontSize={"12px"}
-              w="208px"
-              mr="1rem"
-              bgColor="#339CD8"
-              color="white"
-              textStyle={"MontserratBold"}
-              colorScheme={"blue"}
-              // disabled={orderType ? false : true}
-              onClick={() => onOpenNewOrder()}
-            >
-              ADICIONAR ITEM
-            </Button>
             <Spinner
               thickness="10px"
               speed="0.65s"
@@ -508,17 +491,13 @@ export default function Scanner() {
           </Flex>
         )}
       </Flex>
-
-      {/* <ModalError
-                checked={checked}
-                eanError={eanError}
-                errorMessage={errorMessage}
-                onCloseError={onCloseError}
-                qtd={qtd}
-                setErrorMessage={setErrorMessage}
-            /> */}
       <ModalPrint isOpen={isOpenPrinter} onClose={onClosePrinter} />
-      <ModalNewOrder isOpen={isOpenNewOrder} onClose={onCloseNewOrder} />
+      <ModalNewOrder
+        isOpen={isOpenNewOrder}
+        onClose={onCloseNewOrder}
+        func={remaingItens}
+        itens={itens}
+      />
       <ModalComponent
         Title={`Nova conferencia`}
         Phrase={`CONFERENCIA DO PEDIDO ${numeroPedido} NÃO FOI CONCLUIDA, DESEJA BUSCAR OUTRO PEDIDO?`}

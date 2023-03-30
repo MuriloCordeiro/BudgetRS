@@ -8,68 +8,149 @@ import {
     ModalFooter,
     Text,
     Flex,
-    Table,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr,
     Checkbox,
+    useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
 import InputWithLabel from "../tools/InputWithLabel";
 import SearchLottie from "../../../public/lottie/Search.json";
 import { getProductById } from "../../hooks/get/getProductById";
+import { ItemsTYPE, Order } from "../../types/itensType";
+import ChangeQty from "../../helpers/changeQty";
 
 type ModalComponentType = {
     isOpen: any;
     onClose: any;
     func?: any;
+    itens?: ItemsTYPE | null;
 };
 
 export default function ModalNewOrder({
     isOpen,
     onClose,
     func,
+    itens,
 }: ModalComponentType) {
     const [itemId, setItemId] = useState("");
-    const [checkedProduct, setCheckedProduct] = useState<any[]>([]);
+    const [checkedProduct, setCheckedProduct] = useState<Order[]>([]);
     const [product, setProduct] = useState<any[]>(checkedProduct);
     const [isLoading, setIsLoading] = useState(false);
+
+    const toast = useToast({
+        duration: 3000,
+        isClosable: true,
+        containerStyle: {
+            textStyle: "BarlowRegular",
+            color: "white",
+            textAlign: "center",
+        },
+    });
+
     const loadingDefaultOptions = {
         loop: true,
         isAutoPlay: false,
         animationData: SearchLottie,
-        rendererSettings: {
-            // preserveAspectRatio: "xMidYMid slice",
-        },
+        rendererSettings: {},
     };
 
     async function findProduct() {
         setIsLoading(true);
         const response = await getProductById(itemId);
-        console.log("response", response?.data);
-        setProduct([...checkedProduct, response?.data]);
+        console.log("response", response);
+        if (response !== undefined) {
+            if (product.length === 0) {
+                setProduct([response?.data, ...checkedProduct]);
+            } else if (
+                product.every(
+                    (prod) => prod?.itemCode !== response?.data?.itemCode
+                )
+            ) {
+                setProduct([response?.data, ...checkedProduct]);
+            } else {
+                toast({
+                    title: "Produto já selecionado",
+                    status: "warning",
+                });
+                setProduct(checkedProduct);
+            }
+        } else {
+            toast({
+                title: "Item não encontrado",
+                status: "error",
+            });
+        }
+        setItemId("");
         setIsLoading(false);
     }
 
-    useEffect(() => {
-        console.log("product", product.length);
-    }, [product]);
+    function checkIsChecked(id: string) {
+        if (checkedProduct.some((prod) => prod?.itemCode === id)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function handleProductCheck(id: string, checked: boolean) {
+        const productId = product.filter((prod) => prod?.itemCode === id);
+        if (checked) {
+            setCheckedProduct([...checkedProduct, ...productId]);
+        } else {
+            const newChecked = checkedProduct.filter(
+                (prod) => prod?.itemCode !== id
+            );
+            setCheckedProduct([...newChecked]);
+        }
+    }
+
+    function newItens() {
+        const hasremaingItens = itens?.orders.some((item) => {
+            const hasCheckYet = checkedProduct.some(
+                (check) =>
+                    check?.itemCode === item?.itemCode &&
+                    item?.remaining === true
+            );
+
+            return hasCheckYet;
+        });
+        console.log("hasremaingItens", hasremaingItens);
+        const qtyNotEmpty = checkedProduct.some((check) => check?.qty === 0);
+
+        if (qtyNotEmpty) {
+            toast({
+                title: "Insira a quantidade em todos os itens selecionados",
+                status: "warning",
+            });
+        } else if (hasremaingItens) {
+            toast({
+                title: "Item ja adicionado",
+                description:
+                    "Um ou mais itens já foram adicionados como itens pendentes, caso queira mudar a quantidade, remova o item pendente e adicione com a quantidade correta",
+                status: "warning",
+            });
+        } else {
+            func(checkedProduct);
+            onClose();
+            toast({
+                title: "Itens adicionados",
+                status: "success",
+            });
+            setCheckedProduct([]);
+            setProduct([]);
+        }
+    }
 
     return (
         <>
-            {/* <Button onClick={onOpen}>Open Modal</Button> */}
-
-            <Modal isOpen={isOpen} onClose={onClose} size={"5xl"}>
+            <Modal isOpen={isOpen} onClose={onClose} size={"6xl"}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader textStyle={"BarlowMedium"}>
                         Buscar itens por ID
                     </ModalHeader>
                     <ModalBody>
-                        <Flex w={"100%"} direction="column" h={"350px"}>
+                        <Flex w={"100%"} direction="column" minH={"400px"}>
                             <Flex gap={"1rem"}>
                                 <InputWithLabel
                                     isDisabled={isLoading}
@@ -104,20 +185,22 @@ export default function ModalNewOrder({
                                         <Flex
                                             mb={"10px"}
                                             w={"100%"}
-
-                                            // justify={"space-around"}
+                                            textStyle={"BarlowBold"}
                                         >
                                             <Flex w={"20%"} justify="center">
                                                 <Text>ID</Text>
                                             </Flex>
-                                            <Flex w={"60%"} justify="center">
+                                            <Flex w={"40%"} justify="center">
                                                 <Text>ITEM</Text>
                                             </Flex>
                                             <Flex w={"20%"} justify="center">
                                                 <Text>EAN</Text>
                                             </Flex>
+                                            <Flex w={"20%"} justify="center">
+                                                <Text>QTD</Text>
+                                            </Flex>
                                         </Flex>
-                                        {product?.map((prod) => (
+                                        {product?.map((prod, index) => (
                                             <Flex
                                                 key={prod?.itemCode}
                                                 w={"100%"}
@@ -126,6 +209,7 @@ export default function ModalNewOrder({
                                                 padding={"5px"}
                                                 borderRadius={"5px"}
                                                 mb={"5px"}
+                                                textStyle={"BarlowRegular"}
                                             >
                                                 <Flex
                                                     w={"20%"}
@@ -135,6 +219,16 @@ export default function ModalNewOrder({
                                                         colorScheme={"red"}
                                                         borderColor={"gray.600"}
                                                         value={prod?.itemCode}
+                                                        isChecked={checkIsChecked(
+                                                            prod?.itemCode
+                                                        )}
+                                                        onChange={(event) =>
+                                                            handleProductCheck(
+                                                                prod?.itemCode,
+                                                                event.target
+                                                                    .checked
+                                                            )
+                                                        }
                                                     />
                                                     <Text alignSelf={"center"}>
                                                         {prod?.itemCode}
@@ -142,12 +236,12 @@ export default function ModalNewOrder({
                                                     <Text></Text>
                                                 </Flex>
                                                 <Flex
-                                                    w={"60%"}
+                                                    w={"40%"}
                                                     justify="center"
                                                 >
                                                     <Text alignSelf={"center"}>
                                                         {prod?.description
-                                                            .substring(0, 70)
+                                                            .substring(0, 40)
                                                             .replace("PNEU", "")
                                                             .trim()}
                                                         ...
@@ -163,25 +257,47 @@ export default function ModalNewOrder({
                                                             : "-"}
                                                     </Text>
                                                 </Flex>
+                                                <Flex
+                                                    w={"20%"}
+                                                    justify="center"
+                                                >
+                                                    <Text alignSelf={"center"}>
+                                                        {checkedProduct.some(
+                                                            (checkProd) =>
+                                                                checkProd?.itemCode ===
+                                                                prod?.itemCode
+                                                        ) ? (
+                                                            prod?.qty === 0 ? (
+                                                                <ChangeQty
+                                                                    index={
+                                                                        index
+                                                                    }
+                                                                    arrayItens={
+                                                                        product
+                                                                    }
+                                                                    setArrayItens={
+                                                                        setProduct
+                                                                    }
+                                                                    id={
+                                                                        prod?.itemCode
+                                                                    }
+                                                                    checkedProduct={
+                                                                        checkedProduct
+                                                                    }
+                                                                    setCheckedProduct={
+                                                                        setCheckedProduct
+                                                                    }
+                                                                />
+                                                            ) : (
+                                                                prod?.qty
+                                                            )
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </Text>
+                                                </Flex>
                                             </Flex>
                                         ))}
-                                        <Flex
-                                            w={"100%"}
-                                            bg={"#D9D9D9"}
-                                            padding={"5px"}
-                                            borderRadius={"5px"}
-                                            mb={"5px"}
-                                        >
-                                            <Flex w={"15%"} justify="center">
-                                                <Text>prod?.itemCode</Text>
-                                            </Flex>
-                                            <Flex w={"60%"} justify="center">
-                                                <Text>prod?.description</Text>
-                                            </Flex>
-                                            <Flex w={"20%"} justify="center">
-                                                <Text>prod?.barcode</Text>
-                                            </Flex>
-                                        </Flex>
                                     </Flex>
                                 </>
                             ) : (
@@ -210,7 +326,9 @@ export default function ModalNewOrder({
                             </Button>
 
                             <Button
-                                isDisabled={product ? false : true}
+                                isDisabled={
+                                    checkedProduct.length > 0 ? false : true
+                                }
                                 // w="full"
                                 bgColor={"#005F27"}
                                 color="white"
@@ -220,8 +338,7 @@ export default function ModalNewOrder({
                                     opacity: "80%",
                                 }}
                                 onClick={() => {
-                                    // validateConf();
-                                    // handleScanner();
+                                    newItens();
                                 }}
                             >
                                 ADICIONAR PRODUTO
