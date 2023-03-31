@@ -15,7 +15,7 @@ import HeaderDesk from "../components/header/HeaderDesk";
 import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
-import { getSoapData } from "../hooks/getSoapData";
+import { getSoapData } from "../hooks/get/getSoapData";
 import { ItemsTYPE, Order } from "../types/itensType";
 import ModalComponent from "../components/modals/ModalComponent";
 import { postSoapData } from "../hooks/post/postSoapData";

@@ -8,5 +8,5 @@ export interface Invoices {
   orderNumber: string;
   shippingCompany: string;
   volumeQty: string;
-  pdf?: any;
+  pdf: string;
 }
