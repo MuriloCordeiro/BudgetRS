@@ -103,28 +103,13 @@ export default function ModalConfFinished({
                                 AVISO: Nem todos os pedidos foram conferidos.
                             </Text>
                         )}
-                        <Button
-                            variant="outline"
-                            textColor={"black"}
-                            border={"2px solid"}
-                            borderColor={"yellow.900"}
-                            borderRadius={"15px"}
-                            _hover={{
-                                borderColor: "yellow.500",
-                                opacity: "80%",
-                            }}
-                            mb="20px"
-                        >
-                            {itens?.general?.ordertype === "REDE"
-                                ? "IMPRIMIR ITENS PENDENTES"
-                                : "GERAR ETIQUETAS"}
-                        </Button>
+
                         <Flex direction={"column"} align={"flex-start"}>
                             <Text>
                                 Escreva o número do pedido para continuar.
                             </Text>
                             <Input
-                                borderRadius={"15px"}
+                                borderRadius={"5px"}
                                 h="45px"
                                 value={orderNumber}
                                 onChange={(e) => setOrderNumber(e.target.value)}
@@ -144,14 +129,24 @@ export default function ModalConfFinished({
                                 Cancelar
                             </Button>
 
-                            <Button
-                                colorScheme={"gren"}
-                                bg={"#005F27"}
-                                _hover={{ opacity: "70%" }}
-                                onClick={() => finishConf()}
-                            >
-                                Concluir
-                            </Button>
+                            <Flex gap="15px">
+                                <Button
+                                    colorScheme={"blue"}
+                                    bg={"#339CD8"}
+                                    _hover={{ opacity: "70%" }}
+                                    onClick={() => finishConf()}
+                                >
+                                    Imprimir
+                                </Button>
+                                <Button
+                                    colorScheme={"gren"}
+                                    bg={"#005F27"}
+                                    _hover={{ opacity: "70%" }}
+                                    onClick={() => finishConf()}
+                                >
+                                    Concluir
+                                </Button>
+                            </Flex>
                         </Flex>
                     </ModalFooter>
                 </ModalContent>

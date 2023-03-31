@@ -6,7 +6,7 @@ import { useToast } from "@chakra-ui/react";
 const breakpoints = {
     base: "0rem",
     sm: "30rem", //480px
-    md: "64rem", //1024px
+    md: "95rem", //1520px
     lg: "120rem", //1920px
 };
 
