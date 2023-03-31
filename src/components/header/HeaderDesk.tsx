@@ -1,18 +1,32 @@
-import { Flex, Image, Box, Text, Link } from "@chakra-ui/react";
+import {
+  Flex,
+  Image,
+  Box,
+  Text,
+  Link,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 
 export default function HeaderDesk() {
+  const wideVersion = useBreakpointValue({
+    md: false,
+    lg: true,
+  });
   return (
     <Flex direction="column">
       <Flex
         align={"center"}
         w={"50%"}
         justify={"space-between"}
-        textStyle="Bold"
+        textStyle={"BarlowMedium"}
+        fontSize={wideVersion ? "16px" : "14px"}
       >
         <Flex>
           <Image alt="Logo da RS" src={"/Image/RS-icon.svg"} w="25px" />
-          <Text>SE</Text>
-          <Text textColor={"#E30613"}>RS</Text>
+          <Text fontSize={"20px"}>SE</Text>
+          <Text fontSize={"20px"} textColor={"#E30613"}>
+            RS
+          </Text>
         </Flex>
         <Link href={"/"}>
           <Text>CONFERÊNCIA</Text>

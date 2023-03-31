@@ -51,7 +51,7 @@ export default function ChangeConferido({
     }
 
     return (
-        <Flex w={"100%"} justify={"start"}>
+        <Flex w={"100%"} justify={"center"}>
             <Input
                 ml={"-10px"}
                 type={"number"}
@@ -68,17 +68,19 @@ export default function ChangeConferido({
                 align={"center"}
                 justify={"space-evenly"}
                 w={"80px"}
-                display={qtdConferido > 0 ? "flex" : "none"}
+                // display={qtdConferido > 0 ? "flex" : "none"}
                 gap={"10px"}
             >
                 <BsCheck
                     size={"25px"}
+                    visibility={qtdConferido > 0 ? "visible" : "hidden"}
                     onClick={() => changeConferidoQTD()}
                     color={"green"}
                     cursor={"pointer"}
                 />
                 <AiOutlineClose
                     size={"20px"}
+                    visibility={qtdConferido > 0 ? "visible" : "hidden"}
                     onClick={() => setQtdConferido(0)}
                     color={"red"}
                     cursor={"pointer"}

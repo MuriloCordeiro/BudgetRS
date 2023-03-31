@@ -37,25 +37,30 @@ export default function ModalComponent({
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>{Title}</ModalHeader>
+                    <ModalHeader fontSize="25px" textStyle={"Bold"}>
+                        {Title}
+                    </ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody>
+                    <ModalBody textAlign={"center"} textStyle={"Regular"}>
                         <Text>{Phrase}</Text>
                     </ModalBody>
 
                     <ModalFooter>
                         <Flex justify={"space-between"} w={"100%"}>
                             <Button
-                                colorScheme="orange"
-                                mr={3}
+                                bg={"#E30613"}
+                                textColor={"white"}
+                                _hover={{ opacity: "70%" }}
                                 onClick={onClose}
                             >
                                 Voltar
                             </Button>
                             {TextButton && (
                                 <Button
-                                    variant="outline"
-                                    colorScheme={"red"}
+                                    // variant="outline"
+                                    colorScheme={"gren"}
+                                    bg={"#005F27"}
+                                    _hover={{ opacity: "70%" }}
                                     onClick={() => {
                                         func();
                                         onClose();
