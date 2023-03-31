@@ -10,6 +10,7 @@ import {
     Flex,
     Checkbox,
     useToast,
+    useBreakpointValue,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
@@ -36,6 +37,11 @@ export default function ModalNewOrder({
     const [checkedProduct, setCheckedProduct] = useState<Order[]>([]);
     const [product, setProduct] = useState<any[]>(checkedProduct);
     const [isLoading, setIsLoading] = useState(false);
+
+    const wideVersion = useBreakpointValue({
+        md: false,
+        lg: true,
+    });
 
     const toast = useToast({
         duration: 3000,
@@ -145,12 +151,16 @@ export default function ModalNewOrder({
         <>
             <Modal isOpen={isOpen} onClose={onClose} size={"6xl"}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent h={wideVersion ? "" : "500px"}>
                     <ModalHeader textStyle={"BarlowMedium"}>
                         Buscar itens por ID
                     </ModalHeader>
                     <ModalBody>
-                        <Flex w={"100%"} direction="column" minH={"400px"}>
+                        <Flex
+                            w={"100%"}
+                            direction="column"
+                            h={wideVersion ? "450px" : "350px"}
+                        >
                             <Flex gap={"1rem"}>
                                 <InputWithLabel
                                     isDisabled={isLoading}

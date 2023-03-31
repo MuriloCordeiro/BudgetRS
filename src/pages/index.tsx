@@ -8,6 +8,7 @@ import {
   useToast,
   Spinner,
   Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import animationLoading from "../animations/99109-loading.json";
 
@@ -15,7 +16,7 @@ import HeaderDesk from "../components/header/HeaderDesk";
 import TableComponent from "../components/conferencia/TableComponent";
 import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
-import { getSoapData } from "../hooks/getSoapData";
+import { getSoapData } from "../hooks/get/getSoapData";
 import { ItemsTYPE, Order } from "../types/itensType";
 import ModalComponent from "../components/modals/ModalComponent";
 import { postSoapData } from "../hooks/post/postSoapData";
@@ -42,6 +43,11 @@ export default function Scanner() {
   const [currentDate, setCurrentDate] = useState("");
   const [initialTime, setInitialTime] = useState("");
   const [colorBorder, setColorBorder] = useState(false);
+
+  const wideVersion = useBreakpointValue({
+    md: false,
+    lg: true,
+  });
 
   // console.log("itens", itens);
   useEffect(() => {
@@ -285,10 +291,8 @@ export default function Scanner() {
           justify={"center"}
           direction="column"
           zIndex={15}
-          // opacity={"50%"}
         >
           <HeaderDesk />
-          {/* <Button onClick={() => teste()}>teste</Button> */}
           <Flex
             w="100%"
             mt="2rem"
@@ -340,7 +344,7 @@ export default function Scanner() {
               >
                 BUSCAR
               </Button>
-              <Flex w={"50%"}>
+              <Flex>
                 <Button
                   // isDisabled={verifyScanner ? true : false}
                   mr="1rem"
@@ -380,14 +384,6 @@ export default function Scanner() {
               </Flex>
             </Flex>
           </Flex>
-          {/* <HeaderConferencia
-                        verifyScanner={verifyScanner}
-                        setVerifyScanner={setVerifyScanner}
-                        setBarcodeScan={setBarcodeScan}
-                        findOrder={findOrder}
-                        itens={itens}
-                        resetItens={resetItens}
-                    /> */}
         </Flex>
 
         {itens !== null ? (
@@ -469,23 +465,24 @@ export default function Scanner() {
             </Flex>
           </>
         ) : (
-          <Flex h={"100vh"} justify={"center"} align={"center"}>
+          <Flex h={"90vh"} justify={"center"} align={"center"} mt={"10vh"}>
             <Img
               src="/Image/RS-icon.svg"
               w={"220px"}
               position={"absolute"}
-              mt={"140px"}
+              // mt={"140px"}
               opacity={loading ? "70%" : "20%"}
               // display={whenIsLoading}
             />
             <Spinner
               thickness="10px"
               speed="0.65s"
+              // position={"absolute"}
               emptyColor="gray.200"
               color="red.400"
               w="350px"
               h="350px"
-              mt="150px"
+              // mt="150px"
               display={whenIsLoading}
             />
           </Flex>

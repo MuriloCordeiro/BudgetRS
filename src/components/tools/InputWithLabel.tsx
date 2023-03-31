@@ -1,4 +1,10 @@
-import { Input, Flex, Text, InputProps } from "@chakra-ui/react";
+import {
+    Input,
+    Flex,
+    Text,
+    InputProps,
+    useBreakpointValue,
+} from "@chakra-ui/react";
 
 type InputWithLabelType = {
     value: string | number;
@@ -21,8 +27,12 @@ export default function InputWithLabel({
     isDisabled,
     borderColor,
 }: InputWithLabelType) {
+    const wideVersion = useBreakpointValue({
+        md: false,
+        lg: true,
+    });
     return (
-        <Flex w={"full"}>
+        <Flex w={wideVersion ? "full" : "200px"}>
             <Flex
                 position={"absolute"}
                 bg={"white"}

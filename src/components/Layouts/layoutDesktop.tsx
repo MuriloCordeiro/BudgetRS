@@ -1,6 +1,4 @@
 import { Flex } from "@chakra-ui/react";
-import NavBar from "../mainNavBar/navBar";
-import Header from "./header";
 
 export default function LayoutDesk(props: any) {
   return (

@@ -1,7 +1,5 @@
 import { Flex, Text, Button, Spinner, Center, Img } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import pedidosFaturados from "../../public/mock/PedidosFaturadosMock";
 import HeaderDesk from "../components/header/HeaderDesk";
 import TableComponentPedidosFaturados from "../components/pedidosFat/PedidosFatTable";
 import { getTodayInvoices } from "../hooks/get/getInvoices";
@@ -9,8 +7,6 @@ import { getTodayInvoices } from "../hooks/get/getInvoices";
 export default function PedidosFaturados() {
   const [pedidosFat, setPedidosFat] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<any>(false);
-
-  const router = useRouter();
 
   async function getAllInvoices() {
     setIsLoading(true);
@@ -50,7 +46,6 @@ export default function PedidosFaturados() {
             position={"absolute"}
             mt={"140px"}
             opacity={"70%"}
-            // display={whenIsLoading}
           />
           <Spinner
             thickness="10px"
@@ -60,14 +55,10 @@ export default function PedidosFaturados() {
             w="350px"
             h="350px"
             mt="150px"
-            //   display={whenIsLoading}
           />
         </Center>
       ) : (
-        <TableComponentPedidosFaturados
-          pedidosFat={pedidosFat}
-          isLoading={isLoading}
-        />
+        <TableComponentPedidosFaturados pedidosFat={pedidosFat} />
       )}
     </Flex>
   );
