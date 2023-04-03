@@ -13,6 +13,7 @@ export async function postSoapData(postOrderObj: OrderPostObj) {
             date: postOrderObj?.date,
             initialTime: postOrderObj?.initialTime,
             endTime: postOrderObj?.endTime,
+            allChecked: postOrderObj?.allChecked,
         });
 
         return data as unknown as ItemsTYPE;
