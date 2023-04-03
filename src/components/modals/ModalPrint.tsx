@@ -1,22 +1,22 @@
 import {
-    Text,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    Button,
-    ModalBody,
-    Flex,
-    ModalFooter,
-    Table,
-    TableContainer,
-    Tbody,
-    Td,
-    Tfoot,
-    Th,
-    Thead,
-    Tr,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  Button,
+  ModalBody,
+  Flex,
+  ModalFooter,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
@@ -24,66 +24,63 @@ import PrintMock from "../../../public/mock/PrintMock";
 import { ItemsTYPE } from "../../types/itensType";
 
 type ModalPrintType = {
-    isOpen: boolean;
-    onClose: any;
-    itens: ItemsTYPE | null;
+  isOpen: boolean;
+  onClose: any;
+  itens: ItemsTYPE | null;
 };
 
 export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
-    const [checked, setCheched] = useState<any[]>([]);
-    const [unchecked, setUncheched] = useState<any[]>([]);
-    const [newItem, setNewItem] = useState<any[]>([]);
+  const [checked, setCheched] = useState<any[]>([]);
+  const [unchecked, setUncheched] = useState<any[]>([]);
+  const [newItem, setNewItem] = useState<any[]>([]);
 
-    useEffect(() => {
-        let check: any = [];
-        let uncheck: any = [];
-        let newI: any = [];
-        console.log("entrou aq ", itens?.orders);
-        itens?.orders?.forEach((prod) => {
-            if (prod?.remaining === true) {
-                newI.push(prod);
-            } else if (
-                prod?.qty === prod?.checked &&
-                prod?.remaining === false
-            ) {
-                check.push(prod);
-            } else {
-                uncheck.push(prod);
-            }
-        });
-        setCheched(check);
-        setUncheched(uncheck);
-        setNewItem(newI);
-        // res === true ? setIsAllChecked(true) : setIsAllChecked(false);
-    }, [itens]);
+  useEffect(() => {
+    let check: any = [];
+    let uncheck: any = [];
+    let newI: any = [];
+    console.log("entrou aq ", itens?.orders);
+    itens?.orders?.forEach((prod) => {
+      if (prod?.remaining === true) {
+        newI.push(prod);
+      } else if (prod?.qty === prod?.checked && prod?.remaining === false) {
+        check.push(prod);
+      } else {
+        uncheck.push(prod);
+      }
+    });
+    setCheched(check);
+    setUncheched(uncheck);
+    setNewItem(newI);
+    // res === true ? setIsAllChecked(true) : setIsAllChecked(false);
+  }, [itens]);
 
-    const componentRef = useRef<any>();
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} size={"4xl"}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>Testando</ModalHeader>
-                <ModalCloseButton />
-                <ReactToPrint
-                    trigger={() => {
-                        return <Button>teste</Button>;
-                    }}
-                    content={() => componentRef.current}
-                    documentTitle="Etiqueta"
-                    pageStyle="print"
-                    onBeforeGetContent={() => Promise.resolve()}
-                    // onAfterPrint={() => setTimeout(() => window.location.reload(), 500)}
-                />
-                <ModalBody>
-                    <Flex
-                        ref={componentRef}
-                        p="1rem"
-                        w="100%"
-                        h="100%"
-                        direction="column"
-                    >
-                        {/* {itens?.orders.map((order, index) => ( */}
-                        <TableContainer>
+  const componentRef = useRef<any>();
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size={"4xl"}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Testando</ModalHeader>
+        <ModalCloseButton />
+        <ReactToPrint
+          trigger={() => {
+            return <Button>teste</Button>;
+          }}
+          content={() => componentRef.current}
+          documentTitle="Etiqueta"
+          pageStyle="print"
+          onBeforeGetContent={() => Promise.resolve()}
+          // onAfterPrint={() => setTimeout(() => window.location.reload(), 500)}
+        />
+        <ModalBody>
+          <Flex
+            ref={componentRef}
+            p="1rem"
+            w="100%"
+            h="100%"
+            direction="column"
+          >
+            {/* {itens?.orders.map((order, index) => ( */}
+            {/* <TableContainer>
                             <Text mb={"20px"}>
                                 ITENS CARREGADOS E CONFERIDOS
                             </Text>
@@ -203,10 +200,10 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                     ))}
                                 </Tbody>
                             </Table>
-                        </TableContainer>
-                    </Flex>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
-    );
+                        </TableContainer> */}
+          </Flex>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
 }
