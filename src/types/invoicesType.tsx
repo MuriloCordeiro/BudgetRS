@@ -1,5 +1,5 @@
 export interface Invoices {
-  GNRE: boolean;
+  GNRE: string;
   client: string;
   clientCode: string;
   emissionDate: string;
