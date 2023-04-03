@@ -5,4 +5,5 @@ export interface OrderPostObj {
     date: any;
     initialTime: any;
     endTime: any;
+    allChecked: string;
 }

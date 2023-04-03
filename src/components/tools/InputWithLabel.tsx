@@ -32,7 +32,7 @@ export default function InputWithLabel({
         lg: true,
     });
     return (
-        <Flex w={wideVersion ? "full" : "200px"}>
+        <Flex w={width ? width : "full"}>
             <Flex
                 position={"absolute"}
                 bg={"white"}
@@ -52,7 +52,7 @@ export default function InputWithLabel({
             <Input
                 fontFamily={"BarlowRegular"}
                 disabled={isDisabled === true ? true : false}
-                w={width ? width : "250px"}
+                w={width ? width : "full"}
                 // w={"full"}
                 borderColor={borderColor ? "red" : "gray.200"}
                 _focusVisible={{

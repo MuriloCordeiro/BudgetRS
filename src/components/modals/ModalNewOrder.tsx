@@ -24,7 +24,7 @@ type ModalComponentType = {
     isOpen: any;
     onClose: any;
     func?: any;
-    itens?: ItemsTYPE | null;
+    itens?: any;
 };
 
 export default function ModalNewOrder({
@@ -111,7 +111,7 @@ export default function ModalNewOrder({
     }
 
     function newItens() {
-        const hasremaingItens = itens?.orders.some((item) => {
+        const hasremaingItens = itens?.orders.some((item: any) => {
             const hasCheckYet = checkedProduct.some(
                 (check) =>
                     check?.itemCode === item?.itemCode &&
@@ -132,7 +132,7 @@ export default function ModalNewOrder({
             toast({
                 title: "Item ja adicionado",
                 description:
-                    "Um ou mais itens já foram adicionados como itens pendentes, caso queira mudar a quantidade, remova o item pendente e adicione com a quantidade correta",
+                    "Um ou mais itens já foram adicionados como itens adicionados, caso queira mudar a quantidade, remova o item pendente e adicione com a quantidade correta",
                 status: "warning",
             });
         } else {
@@ -169,7 +169,7 @@ export default function ModalNewOrder({
                                     text={
                                         "ESCREVA O NÚMERO DO ITEM PARA BUSCAR"
                                     }
-                                    width={"100%"}
+                                    width={"full"}
                                     textColor={"black"}
                                     fontSize={"12px"}
                                 />
