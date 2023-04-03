@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import HeaderDesk from "../components/header/HeaderDesk";
 import TableComponentPedidosFaturados from "../components/pedidosFat/PedidosFatTable";
 import { getTodayInvoices } from "../hooks/get/getInvoices";
+import LayoutDesk from "../components/Layouts/layoutDesktop";
 
 export default function PedidosFaturados() {
   const [pedidosFat, setPedidosFat] = useState<any>(null);
@@ -20,12 +21,9 @@ export default function PedidosFaturados() {
   }, []);
 
   return (
-    <Flex p="2rem" direction={"column"}>
+    <LayoutDesk>
       <HeaderDesk />
-      <Flex align={"center"} justify={"space-between"}>
-        <Text mt={"20px"} fontSize={"22px"}>
-          PEDIDOS FATURADOS
-        </Text>
+      <Flex justify={"end"} mt={"18px"}>
         <Button
           bg={"#339CD8"}
           textColor={"white"}
@@ -33,6 +31,7 @@ export default function PedidosFaturados() {
           paddingX={"40px"}
           _hover={{ opacity: "80%" }}
           colorScheme={"cyan"}
+          mt="1rem"
         >
           ATUALIZAR TELA
         </Button>
@@ -44,7 +43,6 @@ export default function PedidosFaturados() {
             src="/Image/RS-icon.svg"
             w={"220px"}
             position={"absolute"}
-            mt={"140px"}
             opacity={"70%"}
           />
           <Spinner
@@ -54,12 +52,11 @@ export default function PedidosFaturados() {
             color="red.400"
             w="350px"
             h="350px"
-            mt="150px"
           />
         </Center>
       ) : (
         <TableComponentPedidosFaturados pedidosFat={pedidosFat} />
       )}
-    </Flex>
+    </LayoutDesk>
   );
 }

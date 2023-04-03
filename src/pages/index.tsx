@@ -23,6 +23,7 @@ import { postSoapData } from "../hooks/post/postSoapData";
 import InputWithLabel from "../components/tools/InputWithLabel";
 import ModalConfFinished from "../components/modals/ModalConfFinished";
 import ModalNewOrder from "../components/modals/ModalNewOrder";
+import LayoutDesk from "../components/Layouts/layoutDesktop";
 
 export default function Scanner() {
   const [barcodeScan, setBarcodeScan] = useState<any>(
