@@ -22,7 +22,6 @@ export default function ChangeConferido({
     isClosable: true,
     containerStyle: {
       color: "white",
-      textStyle: "BarlowRegular",
     },
   });
 

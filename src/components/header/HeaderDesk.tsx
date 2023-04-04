@@ -25,7 +25,6 @@ export default function HeaderDesk() {
         align={"center"}
         w={"60%"}
         justify={"space-between"}
-        // textStyle={"BarlowMedium"}
         fontSize={wideVersion ? "16px" : "14px"}
       >
         <Flex>
