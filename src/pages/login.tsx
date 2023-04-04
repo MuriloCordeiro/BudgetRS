@@ -78,7 +78,6 @@ export default function HomeLogin() {
         duration: 2500,
         containerStyle: {
             color: "white",
-            textStyle: "BarlowRegular",
         },
     });
 

@@ -31,7 +31,6 @@ export default function HeaderConferencia({
     isClosable: true,
     containerStyle: {
       color: "white",
-      textStyle: "BarlowRegular",
     },
   });
 

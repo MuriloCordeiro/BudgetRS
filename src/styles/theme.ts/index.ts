@@ -14,7 +14,6 @@ const toastOptions = {
   duration: 3000,
   isClosable: true,
   containerStyle: {
-    textStyle: "BarlowRegular",
     color: "white",
   },
 };
