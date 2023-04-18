@@ -433,7 +433,7 @@ export default function Scanner() {
                             borderTop={"2px solid #E2E8F0"}
                         >
                             <Flex w="full" justify="start">
-                                <Button
+                                {/* <Button
                                     fontSize={"12px"}
                                     w="208px"
                                     mr="1rem"
@@ -453,7 +453,7 @@ export default function Scanner() {
                                     // }
                                 >
                                     GERAR ETIQUETAS
-                                </Button>
+                                </Button> */}
                                 <Button
                                     fontSize={"12px"}
                                     w="208px"
@@ -505,6 +505,7 @@ export default function Scanner() {
                                 isAllChecked={isAllChecked}
                                 itens={itens}
                                 sendInsertOrders={sendInsertOrders}
+                                orderNumbers={numeroPedido}
                             />
                         </Flex>
                     </>

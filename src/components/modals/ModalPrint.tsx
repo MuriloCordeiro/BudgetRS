@@ -8,20 +8,16 @@ import {
     Button,
     ModalBody,
     Flex,
-    ModalFooter,
     Table,
     TableContainer,
     Tbody,
     Td,
-    Tfoot,
     Th,
     Thead,
     Tr,
-    Img,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
-import PrintMock from "../../../public/mock/PrintMock";
 import { ItemsTYPE } from "../../types/itensType";
 
 type ModalPrintType = {
@@ -48,13 +44,18 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
             ) {
                 check.push(prod);
             } else {
-                uncheck.push(prod);
+                if (prod?.checked !== 0) {
+                    const resp = prod?.qty - prod?.checked;
+                    check.push({ ...prod, qty: prod?.checked });
+                    uncheck.push({ ...prod, qty: resp });
+                } else {
+                    uncheck.push(prod);
+                }
             }
         });
         setChecked(check);
         setUnchecked(uncheck);
         setNewItem(newI);
-        // res === true ? setIsAllChecked(true) : setIsAllChecked(false);
     }, [itens]);
 
     console.log("checked", checked);
@@ -64,11 +65,21 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
         <Modal isOpen={isOpen} onClose={onClose} size={"4xl"}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Testando</ModalHeader>
+                <ModalHeader>Relatório de itens</ModalHeader>
                 <ModalCloseButton />
                 <ReactToPrint
                     trigger={() => {
-                        return <Button>teste</Button>;
+                        return (
+                            <Button
+                                colorScheme="yellow"
+                                bg={"#F9B000"}
+                                alignSelf={"center"}
+                                w={"25%"}
+                                textColor={"white"}
+                            >
+                                Imprimir
+                            </Button>
+                        );
                     }}
                     content={() => componentRef.current}
                     documentTitle="Etiqueta"
@@ -77,142 +88,168 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                 />
                 <ModalBody>
                     <Flex ref={componentRef} p="1rem" direction="column">
-                        {/* <Flex direction="row" align="end" fontSize="18px">
-              <Img
-                src="/Image/logo-rs-pneus.svg"
-                w="140px"
-                h="40px"
-                mr="4rem"
-              />
-              <Text fontWeight="bold">PED: 1057</Text>
-            </Flex>
-            <Flex mt="1rem" direction="column" fontSize="18px">
-              <Text fontWeight="bold">TRANSLOVATO</Text>
-              <Text fontWeight="bold">PINDAMONHAGABA/SP</Text>
-              <Text fontWeight="bold">VOL. 01/126</Text>
-            </Flex> */}
-
-                        {/* {itens?.orders.map((order, index) => ( */}
                         <TableContainer>
-                            <Text mb={"20px"}>
-                                ITENS CARREGADOS E CONFERIDOS
-                            </Text>
-                            <Table size="sm">
-                                <Thead>
-                                    <Tr>
-                                        <Th>ID</Th>
-                                        <Th>DESCRIÇÃO</Th>
-                                        <Th>EAN</Th>
-                                        <Th>Qtde</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {checked?.map((order, index) => (
-                                        <Tr>
-                                            <Td fontSize={"10px"} w={"10%"}>
-                                                {order?.itemCode}
-                                            </Td>
-                                            <Td
-                                                fontSize={
-                                                    order?.description.length >
-                                                    70
-                                                        ? "10px"
-                                                        : "10px"
-                                                }
-                                                w={"60%"}
-                                            >
-                                                {order?.description}
-                                            </Td>
-                                            <Td fontSize={"10px"} w={"20%"}>
-                                                {order?.barcode
-                                                    ? order?.barcode
-                                                    : "-"}
-                                            </Td>
-                                            <Td fontSize={"10px"} w={"10%"}>
-                                                {order?.qty}
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                            <Text my={"20px"}>ITENS ADICIONADOS NO PEDIDO</Text>
-                            <Table size="sm">
-                                <Thead>
-                                    <Tr>
-                                        <Th>ID</Th>
-                                        <Th>DESCRIÇÃO</Th>
-                                        <Th>EAN</Th>
-                                        <Th>Qtde</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {newItem?.map((order, index) => (
-                                        <Tr>
-                                            <Td fontSize={"10px"} w={"10%"}>
-                                                {order?.itemCode}
-                                            </Td>
-                                            <Td
-                                                fontSize={
-                                                    order?.description.length >
-                                                    70
-                                                        ? "10px"
-                                                        : "10px"
-                                                }
-                                                w={"60%"}
-                                            >
-                                                {order?.description}
-                                            </Td>
-                                            <Td fontSize={"10px"} w={"20%"}>
-                                                {order?.barcode
-                                                    ? order?.barcode
-                                                    : "-"}
-                                            </Td>
-                                            <Td fontSize={"10px"} w={"10%"}>
-                                                {order?.qty}
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                            <Text my={"20px"}>ITENS PENDENTES</Text>
-                            <Table size="sm">
-                                <Thead>
-                                    <Tr>
-                                        <Th>ID</Th>
-                                        <Th>DESCRIÇÃO</Th>
-                                        <Th>EAN</Th>
-                                        <Th>Qtde</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {unchecked?.map((order, index) => (
-                                        <Tr>
-                                            <Td fontSize={"10px"} w={"10%"}>
-                                                {order?.itemCode}
-                                            </Td>
-                                            <Td
-                                                fontSize={
-                                                    order?.description?.length >
-                                                    70
-                                                        ? "10px"
-                                                        : "10px"
-                                                }
-                                                w={"60%"}
-                                            >
-                                                {order?.description}
-                                            </Td>
-                                            <Td fontSize={"10px"} w={"20%"}>
-                                                {order?.barcode
-                                                    ? order?.barcode
-                                                    : "-"}
-                                            </Td>
-                                            <Td fontSize={"10px"} w={"10%"}>
-                                                {order?.qty}
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
+                            {checked.length > 0 && (
+                                <>
+                                    <Text mb={"20px"}>
+                                        ITENS CARREGADOS E CONFERIDOS
+                                    </Text>
+                                    <Table size="sm">
+                                        <Thead>
+                                            <Tr>
+                                                <Th>ID</Th>
+                                                <Th>DESCRIÇÃO</Th>
+                                                <Th>EAN</Th>
+                                                <Th>Qtde</Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                            {checked?.map((order, index) => (
+                                                <Tr>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"10%"}
+                                                    >
+                                                        {order?.itemCode}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={
+                                                            order?.description
+                                                                .length > 70
+                                                                ? "10px"
+                                                                : "10px"
+                                                        }
+                                                        w={"60%"}
+                                                    >
+                                                        {order?.description}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"20%"}
+                                                    >
+                                                        {order?.barcode
+                                                            ? order?.barcode
+                                                            : "-"}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"10%"}
+                                                    >
+                                                        {order?.qty}
+                                                    </Td>
+                                                </Tr>
+                                            ))}
+                                        </Tbody>
+                                    </Table>
+                                </>
+                            )}
+
+                            {newItem.length > 0 && (
+                                <>
+                                    <Text my={"20px"}>
+                                        ITENS ADICIONADOS NO PEDIDO
+                                    </Text>
+                                    <Table size="sm">
+                                        <Thead>
+                                            <Tr>
+                                                <Th>ID</Th>
+                                                <Th>DESCRIÇÃO</Th>
+                                                <Th>EAN</Th>
+                                                <Th>Qtde</Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                            {newItem?.map((order, index) => (
+                                                <Tr>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"10%"}
+                                                    >
+                                                        {order?.itemCode}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={
+                                                            order?.description
+                                                                .length > 70
+                                                                ? "10px"
+                                                                : "10px"
+                                                        }
+                                                        w={"60%"}
+                                                    >
+                                                        {order?.description}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"20%"}
+                                                    >
+                                                        {order?.barcode
+                                                            ? order?.barcode
+                                                            : "-"}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"10%"}
+                                                    >
+                                                        {order?.qty}
+                                                    </Td>
+                                                </Tr>
+                                            ))}
+                                        </Tbody>
+                                    </Table>
+                                </>
+                            )}
+                            {unchecked.length > 0 && (
+                                <>
+                                    <Text my={"20px"}>ITENS PENDENTES</Text>
+                                    <Table size="sm">
+                                        <Thead>
+                                            <Tr>
+                                                <Th>ID</Th>
+                                                <Th>DESCRIÇÃO</Th>
+                                                <Th>EAN</Th>
+                                                <Th>Qtde</Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                            {unchecked?.map((order, index) => (
+                                                <Tr>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"10%"}
+                                                    >
+                                                        {order?.itemCode}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={
+                                                            order?.description
+                                                                ?.length > 70
+                                                                ? "10px"
+                                                                : "10px"
+                                                        }
+                                                        w={"60%"}
+                                                    >
+                                                        {order?.description}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"20%"}
+                                                    >
+                                                        {order?.barcode
+                                                            ? order?.barcode
+                                                            : "-"}
+                                                    </Td>
+                                                    <Td
+                                                        fontSize={"10px"}
+                                                        w={"10%"}
+                                                    >
+                                                        {order?.qty}
+                                                    </Td>
+                                                </Tr>
+                                            ))}
+                                        </Tbody>
+                                    </Table>
+                                </>
+                            )}
                         </TableContainer>
                     </Flex>
                 </ModalBody>

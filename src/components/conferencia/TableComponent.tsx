@@ -79,7 +79,6 @@ export default function TableComponent({
                             <Th w={wideVersion ? "13%" : "17%"}>CONFERIDO</Th>
                             <Th w={wideVersion ? "5%" : "5%"}>%</Th>
                             <Th w={wideVersion ? "5%" : "5%"}></Th>
-                            <Button onClick={onOpenDeleteItem}>oi</Button>
                         </Flex>
                     </Tr>
                 </Thead>
