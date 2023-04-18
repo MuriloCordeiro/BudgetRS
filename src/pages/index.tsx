@@ -18,12 +18,13 @@ import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
 import { getSoapData } from "../hooks/get/getSoapData";
 import { ItemsTYPE, Order } from "../types/itensType";
-import ModalComponent from "../components/modals/ModalComponent";
+import ModalComponent from "../components/modals/ModalDeleteItem";
 import { postSoapData } from "../hooks/post/postSoapData";
 import InputWithLabel from "../components/tools/InputWithLabel";
 import ModalConfFinished from "../components/modals/ModalConfFinished";
 import ModalNewOrder from "../components/modals/ModalNewOrder";
 import LayoutDesk from "../components/Layouts/layoutDesktop";
+import ModalTags from "../components/modals/ModalTags";
 
 export default function Scanner() {
   const [barcodeScan, setBarcodeScan] = useState<any>(
@@ -50,7 +51,7 @@ export default function Scanner() {
     lg: true,
   });
 
-  // console.log("itens", itens);
+  console.log("orderType", orderType);
   useEffect(() => {
     const res = itens?.orders?.every((prod) => prod?.qty === prod?.checked);
     res === true ? setIsAllChecked(true) : setIsAllChecked(false);
@@ -91,9 +92,9 @@ export default function Scanner() {
   });
 
   const {
-    isOpen: isOpenPrinter,
-    onOpen: onOpenPrinter,
-    onClose: onClosePrinter,
+    isOpen: isOpenTags,
+    onOpen: onOpenTags,
+    onClose: onCloseTags,
   } = useDisclosure();
   const {
     isOpen: isOpenError,
@@ -419,6 +420,9 @@ export default function Scanner() {
                   bgColor="#005F27"
                   color="white"
                   colorScheme={"green"}
+                  onClick={() => onOpenTags()}
+                  // disabled={orderType ? false : true}
+                  disabled={isAllChecked ? true : false}
                   // disabled={
                   //     orderType
                   //         ? isAllChecked
@@ -450,11 +454,8 @@ export default function Scanner() {
                   textStyle={"MontserratBold"}
                   color="white"
                   colorScheme={"yellow"}
-                  onClick={() => onOpenPrinter()}
-                  // disabled={orderType ? false : true}
-                  disabled={isAllChecked ? true : false}
                 >
-                  IMPRIMIR ITENS PENDENTES
+                  IMPRIMIR RELATÓRIO DE ITENS
                 </Button>
               </Flex>
               <Button
@@ -509,10 +510,11 @@ export default function Scanner() {
           </Flex>
         )}
       </Flex>
-      <ModalPrint
-        isOpen={isOpenPrinter}
-        onClose={onClosePrinter}
+      <ModalTags
+        isOpen={isOpenTags}
+        onClose={onCloseTags}
         itens={itens}
+        orderNumber={numeroPedido}
       />
       <ModalNewOrder
         isOpen={isOpenNewOrder}
