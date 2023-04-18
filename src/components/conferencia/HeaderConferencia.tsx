@@ -1,7 +1,7 @@
 import { Box, Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ItemsTYPE } from "../../types/itensType";
-import ModalComponent from "../modals/ModalComponent";
+import ModalComponent from "../modals/ModalDeleteItem";
 import InputWithLabel from "../tools/InputWithLabel";
 
 type HeaderConferenciaType = {

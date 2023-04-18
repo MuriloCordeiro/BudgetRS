@@ -24,13 +24,19 @@ import ReactToPrint from "react-to-print";
 import PrintMock from "../../../public/mock/PrintMock";
 import { ItemsTYPE } from "../../types/itensType";
 
-type ModalPrintType = {
+type ModalPrintTagsType = {
   isOpen: boolean;
   onClose: any;
   itens: ItemsTYPE | null;
+  orderNumber: string;
 };
 
-export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
+export default function ModalTags({
+  isOpen,
+  onClose,
+  itens,
+  orderNumber,
+}: ModalPrintTagsType) {
   const [checked, setChecked] = useState<any[]>([]);
   const [unchecked, setUnchecked] = useState<any[]>([]);
   const [newItem, setNewItem] = useState<any[]>([]);
@@ -54,7 +60,7 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
     // res === true ? setIsAllChecked(true) : setIsAllChecked(false);
   }, [itens]);
 
-  console.log("checked", checked);
+  console.log("orderNumber", orderNumber);
 
   const componentRef = useRef<any>();
   return (
@@ -74,21 +80,25 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
         />
         <ModalBody>
           <Flex ref={componentRef} p="1rem" direction="column">
-            <Flex direction="row" align="end" fontSize="18px">
-              <Img
-                src="/Image/logo-rs-pneus.svg"
-                w="140px"
-                h="40px"
-                mr="4rem"
-              />
-              <Text fontWeight="bold">PED: 1057</Text>
-            </Flex>
-            <Flex mt="1rem" direction="column" fontSize="18px">
-              <Text fontWeight="bold">TRANSLOVATO</Text>
-              <Text fontWeight="bold">PINDAMONHAGABA/SP</Text>
-              <Text fontWeight="bold">VOL. 01/126</Text>
-            </Flex>
-
+            {checked &&
+              checked.map((prods, index) => (
+                <Flex key={index} direction="column">
+                  <Flex direction="row" align="end" fontSize="18px">
+                    <Img
+                      src="/Image/logo-rs-pneus.svg"
+                      w="140px"
+                      h="40px"
+                      mr="4rem"
+                    />
+                    <Text fontWeight="bold">PED: {orderNumber}</Text>
+                  </Flex>
+                  <Flex mt="1rem" direction="column" fontSize="18px">
+                    <Text fontWeight="bold">{prods.shippingCompany}</Text>
+                    <Text fontWeight="bold">{prods.city.replace(" ", "")}</Text>
+                    <Text fontWeight="bold">VOL. 01/126</Text>
+                  </Flex>
+                </Flex>
+              ))}
             {/* {itens?.orders.map((order, index) => ( */}
             {/* <TableContainer>
               <Text mb={"20px"}>ITENS CARREGADOS E CONFERIDOS</Text>

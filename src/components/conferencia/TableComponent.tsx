@@ -12,12 +12,13 @@ import {
   useDisclosure,
   useBreakpointValue,
   Select,
+  Button,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsTrash } from "react-icons/bs";
 import ChangeConferido from "../../helpers/changeConferido";
 import { ItemsTYPE } from "../../types/itensType";
-import ModalComponent from "../modals/ModalComponent";
+import ModalDeleteItem from "../modals/ModalDeleteItem";
 import { BiEditAlt } from "react-icons/bi";
 import PopoverSERS from "./popoverSERS";
 
@@ -60,7 +61,7 @@ export default function TableComponent({
   } = useDisclosure();
 
   return (
-    <TableContainer mt="160px" paddingX="2rem" paddingY="3.5rem">
+    <TableContainer mt="160px" paddingX="2rem" paddingY="3.5rem" w="100vw">
       <Table variant="striped" size="md">
         <Thead w={"100%"}>
           <Tr
@@ -81,6 +82,7 @@ export default function TableComponent({
               <Th w={wideVersion ? "13%" : "17%"}>CONFERIDO</Th>
               <Th w={wideVersion ? "5%" : "5%"}>%</Th>
               <Th w={wideVersion ? "5%" : "5%"}></Th>
+              <Button onClick={onOpenDeleteItem}>oi</Button>
             </Flex>
           </Tr>
         </Thead>
@@ -169,13 +171,16 @@ export default function TableComponent({
                 </Text>
               </Td>
               <Td w={wideVersion ? "5%" : "5%"}>
-                <PopoverSERS />
+                <PopoverSERS
+                  prodName={prod?.description}
+                  prodBarcode={prod?.barcode}
+                />
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-      <ModalComponent
+      <ModalDeleteItem
         Title="Deletar Item Pendente"
         Phrase={`Deseja deletar o item pendente do id ${itemSelect}?`}
         TextButton="Deletar"
