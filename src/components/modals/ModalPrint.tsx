@@ -15,6 +15,7 @@ import {
     Th,
     Thead,
     Tr,
+    ModalFooter,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
@@ -62,32 +63,18 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
 
     const componentRef = useRef<any>();
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={"4xl"}>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            size={"4xl"}
+            scrollBehavior={"inside"}
+        >
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Relatório de itens</ModalHeader>
                 <ModalCloseButton />
-                <ReactToPrint
-                    trigger={() => {
-                        return (
-                            <Button
-                                colorScheme="yellow"
-                                bg={"#F9B000"}
-                                alignSelf={"center"}
-                                w={"25%"}
-                                textColor={"white"}
-                            >
-                                Imprimir
-                            </Button>
-                        );
-                    }}
-                    content={() => componentRef.current}
-                    documentTitle="Etiqueta"
-                    pageStyle="print"
-                    onBeforeGetContent={() => Promise.resolve()}
-                />
                 <ModalBody>
-                    <Flex ref={componentRef} p="1rem" direction="column">
+                    <Flex ref={componentRef} px="1rem" direction="column">
                         <TableContainer>
                             {checked.length > 0 && (
                                 <>
@@ -201,7 +188,7 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                             {unchecked.length > 0 && (
                                 <>
                                     <Text my={"20px"}>ITENS PENDENTES</Text>
-                                    <Table size="sm">
+                                    <Table size="sm" variant={"unstyled"}>
                                         <Thead>
                                             <Tr>
                                                 <Th>ID</Th>
@@ -216,6 +203,9 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                                     <Td
                                                         fontSize={"10px"}
                                                         w={"10%"}
+                                                        borderBottom={
+                                                            "1px solid #4f4f4f"
+                                                        }
                                                     >
                                                         {order?.itemCode}
                                                     </Td>
@@ -227,12 +217,18 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                                                 : "10px"
                                                         }
                                                         w={"60%"}
+                                                        borderBottom={
+                                                            "1px solid #4f4f4f"
+                                                        }
                                                     >
                                                         {order?.description}
                                                     </Td>
                                                     <Td
                                                         fontSize={"10px"}
                                                         w={"20%"}
+                                                        borderBottom={
+                                                            "1px solid #4f4f4f"
+                                                        }
                                                     >
                                                         {order?.barcode
                                                             ? order?.barcode
@@ -241,6 +237,9 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                                     <Td
                                                         fontSize={"10px"}
                                                         w={"10%"}
+                                                        borderBottom={
+                                                            "1px solid #4f4f4f"
+                                                        }
                                                     >
                                                         {order?.qty}
                                                     </Td>
@@ -253,6 +252,39 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                         </TableContainer>
                     </Flex>
                 </ModalBody>
+                <ModalFooter>
+                    <Button
+                        variant="ghost"
+                        bgColor={"red"}
+                        color="white"
+                        mr="2rem"
+                        _hover={{
+                            bgColor: "#b40505",
+                        }}
+                        onClick={onClose}
+                    >
+                        Voltar
+                    </Button>
+                    <ReactToPrint
+                        trigger={() => {
+                            return (
+                                <Button
+                                    bgColor={"#005F27"}
+                                    color="white"
+                                    _hover={{
+                                        bgColor: "#083b19",
+                                    }}
+                                >
+                                    Imprimir
+                                </Button>
+                            );
+                        }}
+                        content={() => componentRef.current}
+                        documentTitle="Etiqueta"
+                        pageStyle="print"
+                        onBeforeGetContent={() => Promise.resolve()}
+                    />
+                </ModalFooter>
             </ModalContent>
         </Modal>
     );

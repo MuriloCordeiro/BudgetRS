@@ -22,11 +22,13 @@ import PopoverSERS from "./popoverSERS";
 type TableComponentType = {
     arrayItens: ItemsTYPE;
     setArrayItens: any;
+    verifyScanner: boolean | undefined;
 };
 
 export default function TableComponent({
     arrayItens,
     setArrayItens,
+    verifyScanner,
 }: TableComponentType) {
     const [itemSelect, setItemSelect] = useState<any>(null);
     const [isRemaing, setIsRemaing] = useState<any>(null);
@@ -167,6 +169,7 @@ export default function TableComponent({
                                         arrayItens={arrayItens}
                                         setArrayItens={setArrayItens}
                                         index={index}
+                                        verifyScanner={verifyScanner}
                                     />
                                 ) : (
                                     <Text w={"100%"} ml={"25px"}>

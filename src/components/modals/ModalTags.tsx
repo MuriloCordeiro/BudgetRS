@@ -9,6 +9,7 @@ import {
     ModalBody,
     Flex,
     Img,
+    ModalFooter,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
@@ -29,6 +30,7 @@ export default function ModalTags({
 }: ModalPrintTagsType) {
     const [checked, setChecked] = useState<any[]>([]);
     const [allCheckedsNumber, setAllCheckedsNumber] = useState<number>(0);
+    const [isPrint, setIsPrint] = useState<boolean>(false);
 
     useEffect(() => {
         setAllCheckedsNumber(0);
@@ -89,50 +91,69 @@ export default function ModalTags({
         setChecked(teste);
     }
 
-    console.log("orderNumber", orderNumber);
-
     const componentRef = useRef<any>();
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={"2xl"}>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            size={"2xl"}
+            scrollBehavior={"inside"}
+        >
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader alignSelf={"center"}>
-                    Imprimir etiquetas
-                </ModalHeader>
+                <ModalHeader>Imprimir etiquetas</ModalHeader>
                 <ModalCloseButton />
-                <ReactToPrint
-                    trigger={() => {
-                        return (
-                            <Button
-                                w="208px"
-                                bgColor="#339CD8"
-                                color="white"
-                                colorScheme={"blue"}
-                                alignSelf={"center"}
-                                _hover={{ opacity: "70%" }}
-                            >
-                                Imprimir
-                            </Button>
-                        );
-                    }}
-                    content={() => componentRef.current}
-                    documentTitle="Etiqueta"
-                    pageStyle="print"
-                    onBeforeGetContent={() => Promise.resolve()}
-                />
+
                 <ModalBody>
-                    {/* <div style={{ display: "none" }}> */}
-                    <Flex
-                        ref={componentRef}
-                        p="1rem"
-                        direction="column"
-                        align={"center"}
-                        gap={"5px"}
-                    >
-                        {checked.length > 0 && checked?.map((prod) => prod)}
-                    </Flex>
-                    {/* </div> */}
+                    {checked.length > 0 ? (
+                        <Flex
+                            ref={componentRef}
+                            p="1rem"
+                            direction="column"
+                            align={"center"}
+                            gap={"5px"}
+                        >
+                            {checked.length > 0 && checked?.map((prod) => prod)}
+                        </Flex>
+                    ) : (
+                        <Text>Nenhum item conferido</Text>
+                    )}
                 </ModalBody>
+                <ModalFooter>
+                    <Button
+                        variant="ghost"
+                        bgColor={"red"}
+                        color="white"
+                        mr="2rem"
+                        _hover={{
+                            bgColor: "#b40505",
+                        }}
+                        onClick={onClose}
+                    >
+                        Voltar
+                    </Button>
+                    <ReactToPrint
+                        trigger={() => {
+                            return (
+                                <Button
+                                    w="208px"
+                                    bgColor="#339CD8"
+                                    color="white"
+                                    colorScheme={"blue"}
+                                    alignSelf={"center"}
+                                    _hover={{ opacity: "70%" }}
+                                    disabled={checked.length > 0 ? false : true}
+                                >
+                                    Imprimir
+                                </Button>
+                            );
+                        }}
+                        content={() => componentRef.current}
+                        documentTitle="Etiqueta"
+                        pageStyle="print"
+                        onBeforeGetContent={() => Promise.resolve()}
+                    />
+                </ModalFooter>
             </ModalContent>
         </Modal>
     );

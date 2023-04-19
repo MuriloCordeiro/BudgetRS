@@ -86,10 +86,10 @@ export default function PopoverSERS({
                 </PopoverContent>
             </Popover>
             <ModalDeleteItem
-                Title="Deletar"
+                Title="Remover item adicionado"
                 Phrase={`Deseja deletar o item pendente ${prodName}?`}
                 func={func}
-                TextButton="Deletar"
+                TextButton="REMOVER ITEM"
                 isOpen={isOpenDelete}
                 onClose={onCloseDelete}
             />

@@ -19,6 +19,7 @@ type ModalComponentType = {
     isOpen: any;
     onClose: any;
     func?: any;
+    bgColor?: string;
 };
 
 export default function ModalDeleteItem({
@@ -28,6 +29,7 @@ export default function ModalDeleteItem({
     isOpen,
     onClose,
     func,
+    bgColor,
 }: ModalComponentType) {
     return (
         <>
@@ -52,12 +54,12 @@ export default function ModalDeleteItem({
                                 _hover={{ opacity: "80%" }}
                                 onClick={onClose}
                             >
-                                Voltar
+                                VOLTAR
                             </Button>
                             {TextButton && (
                                 <Button
                                     textColor={"white"}
-                                    bg={"red"}
+                                    bg={bgColor ? bgColor : "red"}
                                     _hover={{ opacity: "80%" }}
                                     onClick={() => {
                                         func();
