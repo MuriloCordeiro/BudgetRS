@@ -59,8 +59,6 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
         setNewItem(newI);
     }, [itens]);
 
-    console.log("checked", checked);
-
     const componentRef = useRef<any>();
     return (
         <Modal
@@ -92,7 +90,7 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                         </Thead>
                                         <Tbody>
                                             {checked?.map((order, index) => (
-                                                <Tr>
+                                                <Tr key={index}>
                                                     <Td
                                                         fontSize={"10px"}
                                                         w={"10%"}
@@ -147,7 +145,7 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                         </Thead>
                                         <Tbody>
                                             {newItem?.map((order, index) => (
-                                                <Tr>
+                                                <Tr key={index}>
                                                     <Td
                                                         fontSize={"10px"}
                                                         w={"10%"}
@@ -199,7 +197,7 @@ export default function ModalPrint({ isOpen, onClose, itens }: ModalPrintType) {
                                         </Thead>
                                         <Tbody>
                                             {unchecked?.map((order, index) => (
-                                                <Tr>
+                                                <Tr key={index}>
                                                     <Td
                                                         fontSize={"10px"}
                                                         w={"10%"}

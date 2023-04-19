@@ -84,7 +84,6 @@ export default function TableComponent({
                         </Flex>
                     </Tr>
                 </Thead>
-                {/* {console.log("arrayItens", arrayItens)} */}
                 <Tbody fontSize={wideVersion ? "16px" : "14px"}>
                     {arrayItens?.orders?.map((prod, index) => (
                         <Tr key={index}>

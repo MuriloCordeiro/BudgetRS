@@ -62,7 +62,6 @@ export default function ModalNewOrder({
   async function findProduct() {
     setIsLoading(true);
     const response = await getProductById(itemId);
-    console.log("response", response);
     if (response !== undefined) {
       if (product.length === 0) {
         setProduct([response?.data, ...checkedProduct]);
@@ -114,7 +113,6 @@ export default function ModalNewOrder({
 
       return hasCheckYet;
     });
-    console.log("hasremaingItens", hasremaingItens);
     const qtyNotEmpty = checkedProduct.some((check) => check?.qty === 0);
 
     if (qtyNotEmpty) {

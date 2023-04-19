@@ -68,11 +68,6 @@ export default function Scanner() {
                 result?.data?.general?.ordertype === "REDE" ? true : false
             );
         setLoading(false);
-        console.log(
-            "orderType",
-            result?.data?.general?.ordertype,
-            result?.data?.general?.ordertype === "REDE" ? true : false
-        );
     }
 
     function resetItens() {
@@ -139,15 +134,9 @@ export default function Scanner() {
         if (itens !== null) {
             const newArrayItens = { ...itens };
             const result = newArrayItens?.orders?.some(checkEAN);
-            console.log("chegoue aq", result);
             if (verifyScanner === true && result === true) {
                 const mappedMock = newArrayItens?.orders?.map((prod) => {
                     if (prod?.barcode && prod?.barcode === barcodeScan) {
-                        console.log(
-                            "olha, chegou aq tbm",
-                            prod?.barcode,
-                            barcodeScan
-                        );
                         setBarcodeScan(null);
                         if (
                             prod?.barcode === barcodeScan &&
@@ -189,10 +178,6 @@ export default function Scanner() {
     }
 
     useEffect(() => {
-        console.log("att", itens);
-    }, [itens]);
-
-    useEffect(() => {
         if (barcodeScan !== null) {
             handleScanner();
         }
@@ -205,7 +190,6 @@ export default function Scanner() {
             onComplete: (barcode): any => {
                 if (verifyScanner === true) {
                     setBarcodeScan(barcode.trim());
-                    console.log("barcode", barcode);
                 } else {
                     setBarcodeScan("Nenhum código válido escaneado");
                 }
@@ -296,7 +280,6 @@ export default function Scanner() {
     function remaingItens(checkedItens: Order[]) {
         const newArrayItens = { ...itens };
         newArrayItens?.orders?.push(...checkedItens);
-        console.log("teste", newArrayItens);
         setItens(newArrayItens);
     }
 
