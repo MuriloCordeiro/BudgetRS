@@ -4,6 +4,7 @@ import HeaderDesk from "../components/header/HeaderDesk";
 import TableComponentPedidosFaturados from "../components/pedidosFat/PedidosFatTable";
 import { getTodayInvoices } from "../hooks/get/getInvoices";
 import LayoutDesk from "../components/Layouts/layoutDesktop";
+import { postDispatchOrder } from "../hooks/post/postDispatchOrder";
 
 export default function PedidosFaturados() {
   const [pedidosFat, setPedidosFat] = useState<any>(null);
@@ -55,7 +56,9 @@ export default function PedidosFaturados() {
           />
         </Center>
       ) : (
-        <TableComponentPedidosFaturados pedidosFat={pedidosFat} />
+        <Flex direction="column" w="full">
+          <TableComponentPedidosFaturados pedidosFat={pedidosFat} />
+        </Flex>
       )}
     </LayoutDesk>
   );

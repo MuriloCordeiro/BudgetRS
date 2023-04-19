@@ -9,4 +9,5 @@ export interface Invoices {
   shippingCompany: string;
   volumeQty: string;
   pdf: string;
+  isDispatched: boolean;
 }

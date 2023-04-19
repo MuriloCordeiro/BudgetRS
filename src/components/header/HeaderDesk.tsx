@@ -23,7 +23,7 @@ export default function HeaderDesk() {
     <Flex direction="column">
       <Flex
         align={"center"}
-        w={"60%"}
+        w={"40%"}
         justify={"space-between"}
         fontSize={wideVersion ? "16px" : "14px"}
       >
@@ -66,7 +66,7 @@ export default function HeaderDesk() {
         {/* <Link href={"/pedidosFaturados"}>
           <Text>PEDIDOS FATURADOS</Text>
         </Link> */}
-        <Text>ENDEREÇAMENTO</Text>
+        {/* <Text>ENDEREÇAMENTO</Text> */}
       </Flex>
       <Box borderBottomWidth="2px" mt="1rem" w="100%" borderColor="gray.200" />
     </Flex>
