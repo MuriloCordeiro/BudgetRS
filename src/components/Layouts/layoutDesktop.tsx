@@ -4,10 +4,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "next/router";
 
 export default function LayoutDesk(props: any) {
-  const { signInEmailPasswordWebservices } = useAuth();
-
-  const Router = useRouter();
-
   return (
     <>
       <Flex px="2rem" mt="0.3rem" direction="column">

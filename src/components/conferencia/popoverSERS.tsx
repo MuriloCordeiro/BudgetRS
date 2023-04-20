@@ -114,37 +114,39 @@ export default function PopoverSERS({
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button
-                            variant="ghost"
-                            bgColor={"red"}
-                            color="white"
-                            mr="2rem"
-                            _hover={{
-                                bgColor: "#b40505",
-                            }}
-                            onClick={onClose}
-                        >
-                            Cancelar
-                        </Button>
-                        <ReactToPrint
-                            trigger={() => {
-                                return (
-                                    <Button
-                                        bgColor={"#005F27"}
-                                        color="white"
-                                        _hover={{
-                                            bgColor: "#083b19",
-                                        }}
-                                    >
-                                        Imprimir
-                                    </Button>
-                                );
-                            }}
-                            content={() => componentRef.current}
-                            documentTitle="Etiqueta"
-                            pageStyle="print"
-                            onBeforeGetContent={() => Promise.resolve()}
-                        />
+                        <Flex w={"100%"} justify={"space-between"}>
+                            <Button
+                                variant="ghost"
+                                bgColor={"red"}
+                                color="white"
+                                mr="2rem"
+                                _hover={{
+                                    bgColor: "#b40505",
+                                }}
+                                onClick={onClose}
+                            >
+                                Cancelar
+                            </Button>
+                            <ReactToPrint
+                                trigger={() => {
+                                    return (
+                                        <Button
+                                            bgColor={"#005F27"}
+                                            color="white"
+                                            _hover={{
+                                                bgColor: "#083b19",
+                                            }}
+                                        >
+                                            Imprimir
+                                        </Button>
+                                    );
+                                }}
+                                content={() => componentRef.current}
+                                documentTitle="Etiqueta"
+                                pageStyle="print"
+                                onBeforeGetContent={() => Promise.resolve()}
+                            />
+                        </Flex>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

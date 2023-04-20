@@ -19,7 +19,7 @@ type ModalPrintTagsType = {
     isOpen: boolean;
     onClose: any;
     itens: ItemsTYPE;
-    orderNumber: string;
+    orderNumber: string | undefined;
 };
 
 export default function ModalTags({
@@ -120,39 +120,43 @@ export default function ModalTags({
                     )}
                 </ModalBody>
                 <ModalFooter>
-                    <Button
-                        variant="ghost"
-                        bgColor={"red"}
-                        color="white"
-                        mr="2rem"
-                        _hover={{
-                            bgColor: "#b40505",
-                        }}
-                        onClick={onClose}
-                    >
-                        Voltar
-                    </Button>
-                    <ReactToPrint
-                        trigger={() => {
-                            return (
-                                <Button
-                                    w="208px"
-                                    bgColor="#339CD8"
-                                    color="white"
-                                    colorScheme={"blue"}
-                                    alignSelf={"center"}
-                                    _hover={{ opacity: "70%" }}
-                                    disabled={checked.length > 0 ? false : true}
-                                >
-                                    Imprimir
-                                </Button>
-                            );
-                        }}
-                        content={() => componentRef.current}
-                        documentTitle="Etiqueta"
-                        pageStyle="print"
-                        onBeforeGetContent={() => Promise.resolve()}
-                    />
+                    <Flex justify={"space-between"} w={"100%"}>
+                        <Button
+                            variant="ghost"
+                            bgColor={"red"}
+                            color="white"
+                            mr="2rem"
+                            _hover={{
+                                bgColor: "#b40505",
+                            }}
+                            onClick={onClose}
+                        >
+                            VOLTAR
+                        </Button>
+                        <ReactToPrint
+                            trigger={() => {
+                                return (
+                                    <Button
+                                        w="208px"
+                                        bgColor="#339CD8"
+                                        color="white"
+                                        colorScheme={"blue"}
+                                        alignSelf={"center"}
+                                        _hover={{ opacity: "70%" }}
+                                        disabled={
+                                            checked.length > 0 ? false : true
+                                        }
+                                    >
+                                        IMPRIMIR
+                                    </Button>
+                                );
+                            }}
+                            content={() => componentRef.current}
+                            documentTitle="Etiqueta"
+                            pageStyle="print"
+                            onBeforeGetContent={() => Promise.resolve()}
+                        />
+                    </Flex>
                 </ModalFooter>
             </ModalContent>
         </Modal>

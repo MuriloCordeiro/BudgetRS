@@ -4,7 +4,6 @@ import {
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalCloseButton,
     ModalBody,
     ModalFooter,
     Text,
@@ -29,7 +28,7 @@ type ModalConfFinishedType = {
     onClose: any;
     isAllChecked: boolean;
     sendInsertOrders: any;
-    orderNumbers: string;
+    orderNumbers: string | undefined;
     conferenciaConcluida: boolean;
     finishConfLoading: boolean;
 };
@@ -46,6 +45,7 @@ export default function ModalConfFinished({
 }: ModalConfFinishedType) {
     const [orderNumber, setOrderNumber] = useState("");
     const [showBody, setShowBody] = useState<boolean>(true);
+
     const router = useRouter();
 
     function correctNumber() {
@@ -106,6 +106,7 @@ export default function ModalConfFinished({
     return (
         <>
             <Modal
+                closeOnEsc={conferenciaConcluida ? false : true}
                 closeOnOverlayClick={conferenciaConcluida ? false : true}
                 isOpen={isOpen}
                 onClose={onClose}
@@ -239,11 +240,10 @@ export default function ModalConfFinished({
                                     >
                                         <b>CONCLUIDO:</b> Todos os itens foram
                                         conferidos.
-                                        <br /> O pedido: <b>
-                                            {orderNumbers}
-                                        </b>{" "}
-                                        foi encaminhado para a fila de
-                                        faturamento.
+                                        <br /> O pedido: <b>{orderNumbers}</b>
+                                        irá aparecer na tela de faturados em 5
+                                        minutos após a finalização da
+                                        conferência.
                                     </Text>
                                 )}
                             </Flex>
@@ -286,7 +286,7 @@ export default function ModalConfFinished({
                                 _hover={{ opacity: "70%" }}
                                 onClick={onClose}
                             >
-                                CANCELAR
+                                VOLTAR
                             </Button>
 
                             <Flex gap="15px">
