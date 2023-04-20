@@ -33,7 +33,6 @@ import {
 } from "firebase/auth";
 import { useState } from "react";
 
-import SignUp from "../components/SignUp";
 import { destroyCookie, parseCookies } from "nookies";
 import Router, { useRouter } from "next/router";
 import {
@@ -98,7 +97,6 @@ export default function HomeLogin() {
           bgColor="#FFFFFF"
           w="35%"
         >
-          {/* <Lottie options={defaultOptions} /> */}
           <MotionFlex
             justify="start"
             direction="column"
@@ -108,16 +106,18 @@ export default function HomeLogin() {
             align="center"
             w="full"
           >
-            <Img
-              src="/Image/login.svg"
-              // mt={"140px"}
-              // display={whenIsLoading}
-            />
-
+            <Flex justify="center">
+              <Image alt="Logo da RS" src={"/Image/RS-icon.svg"} w="120x" />
+              <Text fontSize={"70px"} fontWeight="Bold">
+                SE
+              </Text>
+              <Text fontSize={"70px"} textColor={"#E30613"} fontWeight="Bold">
+                RS
+              </Text>
+            </Flex>
             <Text fontSize="18px" fontWeight="bold" align="center" mb="1rem">
-              Seja bem-vindo ao sistema de expedição RS!
+              Seja bem-vindo
             </Text>
-
             <Text
               opacity="45%"
               fontSize="14px"
@@ -145,7 +145,7 @@ export default function HomeLogin() {
               borderColor="gray.300"
               variant="outline"
               borderRadius="15px"
-              placeholder="Digite seu email."
+              placeholder="Digite seu usuário do senior."
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -165,6 +165,7 @@ export default function HomeLogin() {
               <BsShieldLock opacity="45%" />
             </InputLeftElement>
             <Input
+              type="password"
               opacity="70%"
               borderColor="gray.300"
               variant="outline"
@@ -178,10 +179,11 @@ export default function HomeLogin() {
           </InputMotion>
 
           <Button
+            w="10rem"
             boxShadow="lg"
             isLoading={isLoading}
             borderWidth="1px"
-            mt="1rem"
+            mt="2rem"
             h="40px"
             colorScheme="green"
             onClick={() => {
