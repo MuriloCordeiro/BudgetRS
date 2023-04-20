@@ -7,14 +7,12 @@ import {
   useDisclosure,
   useToast,
   Spinner,
-  Text,
   useBreakpointValue,
+  Tooltip,
 } from "@chakra-ui/react";
-import animationLoading from "../animations/99109-loading.json";
 
 import HeaderDesk from "../components/header/HeaderDesk";
 import TableComponent from "../components/conferencia/TableComponent";
-import FooterConferencia from "../components/conferencia/FooterConferencia";
 import ModalPrint from "../components/modals/ModalPrint";
 import { getSoapData } from "../hooks/get/getSoapData";
 import { ItemsTYPE, Order } from "../types/itensType";
@@ -23,7 +21,6 @@ import { postSoapData } from "../hooks/post/postSoapData";
 import InputWithLabel from "../components/tools/InputWithLabel";
 import ModalConfFinished from "../components/modals/ModalConfFinished";
 import ModalNewOrder from "../components/modals/ModalNewOrder";
-import LayoutDesk from "../components/Layouts/layoutDesktop";
 import ModalTags from "../components/modals/ModalTags";
 
 export default function Scanner() {
@@ -31,7 +28,7 @@ export default function Scanner() {
     "Nenhum código de barra escaneado"
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [verifyScanner, setVerifyScanner] = useState<Boolean>();
+  const [verifyScanner, setVerifyScanner] = useState<boolean>();
   const [eanError, setEanError] = useState<string>();
   const [qtd, setQtd] = useState<any>();
   const [checked, setChecked] = useState<any>();
@@ -39,19 +36,21 @@ export default function Scanner() {
   const [loading, setLoading] = useState<boolean>(false);
   const [orderType, setOrderType] = useState<boolean>(false);
   const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
-  const [numeroPedido, setNumeroPedido] = useState("");
-  const [separador, setSeparador] = useState("");
-  const [conferente, setConferente] = useState("");
-  const [currentDate, setCurrentDate] = useState("");
-  const [initialTime, setInitialTime] = useState("");
-  const [colorBorder, setColorBorder] = useState(false);
+  const [numeroPedido, setNumeroPedido] = useState<string>("");
+  const [separador, setSeparador] = useState<string>("");
+  const [conferente, setConferente] = useState<string>("");
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const [initialTime, setInitialTime] = useState<string>("");
+  const [colorBorder, setColorBorder] = useState<boolean>(false);
+  const [finishConfLoading, setFinishConfLoading] = useState<boolean>(false);
+  const [conferenciaConcluida, setConferenciaConcluida] =
+    useState<boolean>(true);
 
   const wideVersion = useBreakpointValue({
     md: false,
     lg: true,
   });
 
-  console.log("orderType", orderType);
   useEffect(() => {
     const res = itens?.orders?.every((prod) => prod?.qty === prod?.checked);
     res === true ? setIsAllChecked(true) : setIsAllChecked(false);
@@ -67,11 +66,6 @@ export default function Scanner() {
     result !== undefined &&
       setOrderType(result?.data?.general?.ordertype === "REDE" ? true : false);
     setLoading(false);
-    console.log(
-      "orderType",
-      result?.data?.general?.ordertype,
-      result?.data?.general?.ordertype === "REDE" ? true : false
-    );
   }
 
   function resetItens() {
@@ -90,6 +84,12 @@ export default function Scanner() {
       color: "white",
     },
   });
+
+  const {
+    isOpen: isOpenPrints,
+    onOpen: onOpenPrints,
+    onClose: onClosePrints,
+  } = useDisclosure();
 
   const {
     isOpen: isOpenTags,
@@ -132,18 +132,16 @@ export default function Scanner() {
     if (itens !== null) {
       const newArrayItens = { ...itens };
       const result = newArrayItens?.orders?.some(checkEAN);
-      console.log("chegoue aq", result);
       if (verifyScanner === true && result === true) {
         const mappedMock = newArrayItens?.orders?.map((prod) => {
           if (prod?.barcode && prod?.barcode === barcodeScan) {
-            console.log("olha, chegou aq tbm", prod?.barcode, barcodeScan);
             setBarcodeScan(null);
             if (
               prod?.barcode === barcodeScan &&
               prod?.checked + 1 > prod?.qty
             ) {
-              setErrorMessage(`Você escaneou <b>${checked}</b> itens, porém a
-                            quantidade correta é <b>${qtd}</b>. Por favor,
+              setErrorMessage(`Você escaneou ${checked} itens, porém a
+                            quantidade correta é ${qtd}. Por favor,
                             verifique novamente e tente escanear a quantidade de
                             itens correta.`);
               onOpenError();
@@ -151,9 +149,7 @@ export default function Scanner() {
               setQtd(prod?.qty);
               setChecked(prod?.checked + 1);
               setVerifyScanner(false);
-              // fetch(
-              //     "https://localhost:5001/ExpeditionScannerAPI"
-              // );
+              fetch("http://localhost:5009/ExpeditionScannerAPI");
 
               return prod;
             } else {
@@ -168,18 +164,14 @@ export default function Scanner() {
         setItens(newArrayItens);
       } else if (verifyScanner === true) {
         setErrorMessage(
-          `Voce escaneou um pedido que não existe na lista de pedido Você escaneou o pedido ${barcodeScan}`
+          `O item com o seguinte código de barras: ${barcodeScan} não foi encontrado no sistema.`
         );
         onOpenError();
         setBarcodeScan(null);
-        // fetch("https://localhost:5001/ExpeditionScannerAPI");
+        fetch("http://localhost:5009/ExpeditionScannerAPI");
       }
     }
   }
-
-  useEffect(() => {
-    console.log("att", itens);
-  }, [itens]);
 
   useEffect(() => {
     if (barcodeScan !== null) {
@@ -194,7 +186,6 @@ export default function Scanner() {
       onComplete: (barcode): any => {
         if (verifyScanner === true) {
           setBarcodeScan(barcode.trim());
-          console.log("barcode", barcode);
         } else {
           setBarcodeScan("Nenhum código válido escaneado");
         }
@@ -223,6 +214,7 @@ export default function Scanner() {
   }, [verifyScanner]);
 
   async function sendInsertOrders() {
+    setFinishConfLoading(true);
     const currentDates = new Date();
     const currentHourInMinutes =
       currentDates.getHours() * 60 + currentDates.getMinutes();
@@ -236,7 +228,13 @@ export default function Scanner() {
       allChecked: isAllChecked.toString(),
     };
     const resp = await postSoapData(objOrder);
-    console.log("sendInsertOrders", resp);
+    if (resp?.status === 200) {
+      setFinishConfLoading(false);
+      setConferenciaConcluida(true);
+    } else {
+      setFinishConfLoading(false);
+      setConferenciaConcluida(false);
+    }
   }
 
   function validateConf() {
@@ -270,8 +268,6 @@ export default function Scanner() {
     setVerifyScanner(false);
     setBarcodeScan("Nenhum código de barra escaneado");
     resetItens();
-    setSeparador("");
-    setConferente("");
     setCurrentDate("");
     setInitialTime("");
     //acontece
@@ -280,7 +276,6 @@ export default function Scanner() {
   function remaingItens(checkedItens: Order[]) {
     const newArrayItens = { ...itens };
     newArrayItens?.orders?.push(...checkedItens);
-    console.log("teste", newArrayItens);
     setItens(newArrayItens);
   }
 
@@ -319,7 +314,7 @@ export default function Scanner() {
                 width={wideVersion ? "200px" : "full"}
                 setValue={setSeparador}
                 text={"SEPARADOR"}
-                isDisabled={itens !== null ? false : true}
+                // isDisabled={itens !== null ? false : true}
                 borderColor={colorBorder}
               />
               <InputWithLabel
@@ -327,35 +322,51 @@ export default function Scanner() {
                 width={wideVersion ? "200px" : "full"}
                 setValue={setConferente}
                 text={"CONFERENTE"}
-                isDisabled={itens !== null ? false : true}
+                // isDisabled={itens !== null ? false : true}
                 borderColor={colorBorder}
               />
             </Flex>
             <Flex justify={"space-between"} w={"100%"}>
-              <Button
-                isDisabled={numeroPedido.length > 3 ? false : true}
-                mr="1rem"
-                w="100px"
-                bgColor={"#005F27"}
-                color="white"
-                textStyle={"MontserratBold"}
-                fontSize={"12px"}
-                _hover={{
-                  opacity: "80%",
-                }}
-                onClick={() => {
-                  if (itens === null) {
-                    findOrder(numeroPedido);
-                  } else {
-                    onOpenNewSearch();
-                  }
-                }}
+              <Tooltip
+                display={
+                  numeroPedido.length > 3 &&
+                  conferente.length >= 3 &&
+                  separador.length >= 3
+                    ? "none"
+                    : "flex"
+                }
+                label="Preencha os campos para continuar"
               >
-                BUSCAR
-              </Button>
+                <Button
+                  isDisabled={
+                    numeroPedido.length > 3 &&
+                    conferente.length >= 3 &&
+                    separador.length >= 3
+                      ? false
+                      : true
+                  }
+                  mr="1rem"
+                  w="100px"
+                  bgColor={"#005F27"}
+                  color="white"
+                  textStyle={"MontserratBold"}
+                  fontSize={"12px"}
+                  _hover={{
+                    opacity: "80%",
+                  }}
+                  onClick={() => {
+                    if (itens === null) {
+                      findOrder(numeroPedido);
+                    } else {
+                      onOpenNewSearch();
+                    }
+                  }}
+                >
+                  BUSCAR
+                </Button>
+              </Tooltip>
               <Flex>
                 <Button
-                  // isDisabled={verifyScanner ? true : false}
                   mr="1rem"
                   w="full"
                   bgColor={"#005F27"}
@@ -367,7 +378,6 @@ export default function Scanner() {
                   }}
                   onClick={() => {
                     validateConf();
-                    // handleScanner();
                   }}
                   disabled={itens !== null && !verifyScanner ? false : true}
                 >
@@ -397,9 +407,12 @@ export default function Scanner() {
 
         {itens !== null ? (
           <>
-            <TableComponent arrayItens={itens} setArrayItens={setItens} />
+            <TableComponent
+              arrayItens={itens}
+              setArrayItens={setItens}
+              verifyScanner={verifyScanner}
+            />
             <Flex
-              fontFamily={"Montserrat"}
               justifyContent={"center"}
               position={"fixed"}
               w={"100%"}
@@ -408,7 +421,6 @@ export default function Scanner() {
               h={"70px"}
               align={"center"}
               p="2rem"
-              // paddingTop={"10px"}
               borderTop={"2px solid #E2E8F0"}
             >
               <Flex w="full" justify="start">
@@ -416,32 +428,9 @@ export default function Scanner() {
                   fontSize={"12px"}
                   w="208px"
                   mr="1rem"
-                  textStyle={"MontserratBold"}
-                  bgColor="#005F27"
-                  color="white"
-                  colorScheme={"green"}
-                  onClick={() => onOpenTags()}
-                  // disabled={orderType ? false : true}
-                  disabled={isAllChecked ? true : false}
-                  // disabled={
-                  //     orderType
-                  //         ? isAllChecked
-                  //             ? false
-                  //             : true
-                  //         : true
-                  // }
-                >
-                  GERAR ETIQUETAS
-                </Button>
-                <Button
-                  fontSize={"12px"}
-                  w="208px"
-                  mr="1rem"
                   bgColor="#339CD8"
                   color="white"
-                  textStyle={"MontserratBold"}
                   colorScheme={"blue"}
-                  disabled={orderType ? false : true}
                   onClick={() => onOpenNewOrder()}
                 >
                   ADICIONAR ITEM
@@ -451,9 +440,9 @@ export default function Scanner() {
                   mr="1rem"
                   w="208px"
                   bgColor="#F9B000"
-                  textStyle={"MontserratBold"}
                   color="white"
                   colorScheme={"yellow"}
+                  onClick={() => onOpenPrints()}
                 >
                   IMPRIMIR RELATÓRIO DE ITENS
                 </Button>
@@ -464,15 +453,8 @@ export default function Scanner() {
                 justifySelf="end"
                 bgColor="#005F27"
                 color="white"
-                textStyle={"MontserratBold"}
+                disabled={!verifyScanner}
                 colorScheme={"green"}
-                // disabled={
-                //     orderType
-                //         ? false
-                //         : isAllChecked
-                //         ? false
-                //         : true
-                // }
                 onClick={() => onOpenFinishConf()}
               >
                 SEPARAÇÃO CONCLUÍDA
@@ -483,6 +465,9 @@ export default function Scanner() {
                 isAllChecked={isAllChecked}
                 itens={itens}
                 sendInsertOrders={sendInsertOrders}
+                orderNumbers={numeroPedido}
+                finishConfLoading={finishConfLoading}
+                conferenciaConcluida={conferenciaConcluida}
               />
             </Flex>
           </>
@@ -523,15 +508,19 @@ export default function Scanner() {
         itens={itens}
       />
       <ModalComponent
-        Title={`Nova conferencia`}
-        Phrase={`CONFERENCIA DO PEDIDO ${numeroPedido} NÃO FOI CONCLUIDA, DESEJA BUSCAR OUTRO PEDIDO?`}
-        TextButton="Buscar"
-        func={() => findOrder(numeroPedido)}
+        Title={`Efetuar nova busca`}
+        Phrase={`A conferencia do pedido: ${numeroPedido} não foi concluída, deseja buscar outro pedido?`}
+        TextButton="BUSCAR"
+        bgColor="#005F27"
+        func={() => {
+          findOrder(numeroPedido);
+          setVerifyScanner(false);
+        }}
         isOpen={isOpenNewSearch}
         onClose={onCloseNewSearch}
       />
       <ModalComponent
-        Title={` Erro! - ${eanError}`}
+        Title={"Erro!"}
         Phrase={errorMessage}
         isOpen={isOpenError}
         onClose={onCloseError}
@@ -539,11 +528,12 @@ export default function Scanner() {
       <ModalComponent
         Title="Cancelar Conferencia"
         Phrase={`Deseja cancelar a conferencia do pedido ${itens?.general?.orderId}`}
-        TextButton="Cancelar"
+        TextButton="CANCELAR"
         func={cancelConf}
         isOpen={isOpenCancelConferencia}
         onClose={onCloseCancelConferencia}
       />
+      <ModalPrint isOpen={isOpenPrints} onClose={onClosePrints} itens={itens} />
     </Flex>
   );
 }

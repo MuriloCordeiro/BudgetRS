@@ -12,9 +12,19 @@ import {
   Img,
   Spinner,
   Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 import { Invoices } from "../../types/invoicesType";
+import { postDispatchOrder } from "../../hooks/post/postDispatchOrder";
+import { useState } from "react";
 
 type tableTypes = {
   pedidosFat: Invoices[];
@@ -23,15 +33,51 @@ type tableTypes = {
 export default function TableComponentPedidosFaturados({
   pedidosFat,
 }: tableTypes) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [order, setOrder] = useState<any>();
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
+
+  function updateOrder(orderToUpdate: any, newParam: any) {
+    pedidosFat.forEach((order) => {
+      if (order.orderNumber === orderToUpdate) {
+        order.isDispatched = newParam;
+      }
+    });
+    console.log("ordersArray", pedidosFat);
+  }
+
+  async function handleDispatch() {
+    const currentDates = new Date();
+
+    const day = String(currentDates.getUTCDate()).padStart(2, "0");
+    const month = String(currentDates.getUTCMonth() + 1).padStart(2, "0");
+    const year = currentDates.getUTCFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
+    const currentHourInMinutes =
+      currentDates.getHours() * 60 + currentDates.getMinutes();
+
+    setIsLoading(true);
+    onClose();
+    const response = await postDispatchOrder(
+      order,
+      formattedDate.toString(),
+      currentHourInMinutes.toString()
+    );
+
+    if (response.statusCode[0] === "1") {
+      updateOrder(order, true);
+    } else {
+      console.error("Erro ao despachar o pedido:", response.error);
+    }
+    setIsLoading(false);
+  }
+
   return (
     <>
       {pedidosFat ? (
-        <TableContainer
-          mt="2rem"
-          mb="2rem"
-          // display={pedidosFat ? "flex" : "none"}
-        >
-          <Table variant="striped" size="md">
+        <TableContainer mt="2rem" mb="2rem">
+          <Table variant="striped" size="sm">
             <Thead>
               <Tr>
                 <Th w="20%">
@@ -51,7 +97,6 @@ export default function TableComponentPedidosFaturados({
                 pedidosFat?.map((prod, index) => (
                   <Tr key={index}>
                     <Td>{prod?.orderNumber}</Td>
-
                     <Td>{prod?.invoiceNumber}</Td>
                     <Td>{prod?.emissionDate}</Td>
                     <Td>{prod?.expectedDate}</Td>
@@ -59,15 +104,14 @@ export default function TableComponentPedidosFaturados({
                     <Td>{prod?.client}</Td>
                     <Td>{prod?.volumeQty}</Td>
                     <Td>{prod?.shippingCompany}</Td>
-                    {/* <Td>{prod?.clientCode}</Td> */}
 
                     <Td>
                       <a href={prod.pdf} target="\_blank" className="btn">
                         <Button
                           bg={"#005F27"}
-                          borderRadius={"30px"}
                           textColor={"white"}
                           colorScheme={"green"}
+                          borderRadius={"30px"}
                         >
                           IMPRIMIR NOTA
                         </Button>
@@ -75,12 +119,22 @@ export default function TableComponentPedidosFaturados({
                     </Td>
                     <Td>
                       <Button
+                        isLoading={
+                          isLoading === true && order === prod.orderNumber
+                            ? true
+                            : false
+                        }
+                        disabled={prod?.isDispatched === true ? true : false}
                         bg={"#005F27"}
-                        borderRadius={"30px"}
                         textColor={"white"}
                         colorScheme={"green"}
+                        borderRadius={"30px"}
+                        onClickCapture={() => {
+                          setOrder(prod?.orderNumber);
+                        }}
+                        onClick={onOpen}
                       >
-                        EXPEDIR
+                        {prod?.isDispatched === true ? "CONCLUÍDO" : "EXPEDIR"}
                       </Button>
                     </Td>
                   </Tr>
@@ -101,6 +155,45 @@ export default function TableComponentPedidosFaturados({
           </Text>
         </Flex>
       )}
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Tem certeza que deseja expedir o pedido: {order}?
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody></ModalBody>
+
+          <ModalFooter>
+            <Flex w="full" justify="space-between">
+              <Button
+                bgColor={"red"}
+                color="white"
+                _hover={{
+                  bgColor: "#b40505",
+                }}
+                mr={3}
+                onClick={onClose}
+              >
+                Cancelar
+              </Button>
+              <Button
+                bgColor={"#005F27"}
+                color="white"
+                _hover={{
+                  bgColor: "#083b19",
+                }}
+                onClick={() => {
+                  handleDispatch();
+                }}
+              >
+                Sim, desejo continuar
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

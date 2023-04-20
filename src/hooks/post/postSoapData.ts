@@ -16,7 +16,7 @@ export async function postSoapData(postOrderObj: OrderPostObj) {
             allChecked: postOrderObj?.allChecked,
         });
 
-        return data as unknown as ItemsTYPE;
+        return data as any;
     } catch (error) {
         console.error(error);
     }

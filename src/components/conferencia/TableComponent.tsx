@@ -11,25 +11,24 @@ import {
   Tooltip,
   useDisclosure,
   useBreakpointValue,
-  Select,
   Button,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { BsTrash } from "react-icons/bs";
 import ChangeConferido from "../../helpers/changeConferido";
-import { ItemsTYPE } from "../../types/itensType";
+import { ItemsTYPE, Order } from "../../types/itensType";
 import ModalDeleteItem from "../modals/ModalDeleteItem";
-import { BiEditAlt } from "react-icons/bi";
 import PopoverSERS from "./popoverSERS";
 
 type TableComponentType = {
   arrayItens: ItemsTYPE;
   setArrayItens: any;
+  verifyScanner: boolean | undefined;
 };
 
 export default function TableComponent({
   arrayItens,
   setArrayItens,
+  verifyScanner,
 }: TableComponentType) {
   const [itemSelect, setItemSelect] = useState<any>(null);
   const [isRemaing, setIsRemaing] = useState<any>(null);
@@ -45,15 +44,27 @@ export default function TableComponent({
   }
 
   function deleteRemaningIten(id: string, isRemaing: boolean) {
+    console.log("id", id, "isRemaing", isRemaing);
     const itens = { ...arrayItens };
-    const deleteItem = itens?.orders?.filter(
-      (prod) => prod?.itemCode !== id && isRemaing === true
-    );
+    const newItens: Order[] = [];
 
-    itens.orders = deleteItem;
+    itens?.orders?.forEach((prod) => {
+      if (prod?.itemCode !== id) {
+        newItens.push(prod);
+      } else if (prod?.remaining === false) {
+        newItens.push(prod);
+      }
+    });
+    // const deleteItem = itens?.orders?.filter(
+    //   (prod) => prod?.itemCode !== id && prod?.remaining !== false
+    // );
+    console.log("newItens", newItens);
+    // console.log("deleteItem", deleteItem);
+    itens.orders = newItens;
 
     setArrayItens(itens);
   }
+  console.log("arrayITENS", arrayItens);
   const {
     isOpen: isOpenDeleteItem,
     onOpen: onOpenDeleteItem,
@@ -82,14 +93,21 @@ export default function TableComponent({
               <Th w={wideVersion ? "13%" : "17%"}>CONFERIDO</Th>
               <Th w={wideVersion ? "5%" : "5%"}>%</Th>
               <Th w={wideVersion ? "5%" : "5%"}></Th>
-              <Button onClick={onOpenDeleteItem}>oi</Button>
             </Flex>
           </Tr>
         </Thead>
-        {/* {console.log("arrayItens", arrayItens)} */}
         <Tbody fontSize={wideVersion ? "16px" : "14px"}>
           {arrayItens?.orders?.map((prod, index) => (
             <Tr key={index}>
+              <ModalDeleteItem
+                Title="Deletar Item Pendente"
+                Phrase={`Deseja deletar o item pendente do id ${itemSelect}?`}
+                TextButton="Deletar"
+                func={() => deleteRemaningIten(itemSelect, isRemaing)}
+                isOpen={isOpenDeleteItem}
+                onClose={onCloseDeleteItem}
+              />
+
               <Td w={wideVersion ? "7%" : "7%"}>
                 <Tooltip
                   label={prod?.remaining ? "Este é um item incluído" : ""}
@@ -105,9 +123,6 @@ export default function TableComponent({
                         ? "#005F27"
                         : "#F9B000"
                     }
-                    // bgColor={
-                    //     prod?.remaining ? "#F9B000" : "none"
-                    // }
                     textColor={"white"}
                     paddingX={"10px"}
                     paddingY={"5px"}
@@ -147,6 +162,7 @@ export default function TableComponent({
                     arrayItens={arrayItens}
                     setArrayItens={setArrayItens}
                     index={index}
+                    verifyScanner={verifyScanner}
                   />
                 ) : (
                   <Text w={"100%"} ml={"25px"}>
@@ -174,20 +190,16 @@ export default function TableComponent({
                 <PopoverSERS
                   prodName={prod?.description}
                   prodBarcode={prod?.barcode}
+                  isRemaining={prod?.remaining}
+                  func={() =>
+                    deleteRemaningIten(prod?.itemCode, prod?.remaining)
+                  }
                 />
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-      <ModalDeleteItem
-        Title="Deletar Item Pendente"
-        Phrase={`Deseja deletar o item pendente do id ${itemSelect}?`}
-        TextButton="Deletar"
-        func={() => deleteRemaningIten(itemSelect, isRemaing)}
-        isOpen={isOpenDeleteItem}
-        onClose={onCloseDeleteItem}
-      />
     </TableContainer>
   );
 }
