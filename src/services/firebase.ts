@@ -16,11 +16,11 @@ const firebaseConfig: any = {
   // messaginSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+// const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);
+// export const db = getFirestore(app);
 
-export const auth = getAuth();
+// export const auth = getAuth();
 
 // if (!firebase.apps.length) {
 //   firebase.initializeApp(firebaseCredentials);

@@ -8,22 +8,28 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { Router, useRouter } from "next/router";
+import { useAuth } from "../../contexts/AuthContext";
+import { destroyCookie, parseCookies } from "nookies";
 
 export default function HeaderDesk() {
-  const wideVersion = useBreakpointValue({
-    md: false,
-    lg: true,
-  });
+  const cookies = parseCookies();
+  const CLIENT_TOKEN: any = process.env.NEXT_PUBLIC_CLIENT_TOKEN;
+  const userToken = cookies[CLIENT_TOKEN];
+
   const Router = useRouter();
 
   const { asPath } = useRouter();
 
-  console.log("asPath", asPath);
+  const wideVersion = useBreakpointValue({
+    md: false,
+    lg: true,
+  });
+
   return (
     <Flex direction="column">
       <Flex
         align={"center"}
-        w={"40%"}
+        w={"100%"}
         justify={"space-between"}
         fontSize={wideVersion ? "16px" : "14px"}
       >
@@ -36,37 +42,46 @@ export default function HeaderDesk() {
             RS
           </Text>
         </Flex>
-        <Button
+        <Flex w="100%" align="start" ml="10rem">
+          <Button
+            mr="5rem"
+            variant="ghost"
+            _hover={{ bgColor: "#E30613", color: "white" }}
+            fontWeight="Regular"
+            onClick={() => {
+              Router.push("/homepage");
+            }}
+            bgColor={asPath === "/homepage" ? "red" : ""}
+            color={asPath === "/homepage" ? "white" : ""}
+          >
+            CONFERÊNCIA
+          </Button>
+          <Button
+            variant="ghost"
+            _hover={{ bgColor: "#E30613", color: "white" }}
+            fontWeight="Regular"
+            onClick={() => {
+              Router.push("/pedidosFaturados");
+            }}
+            bgColor={asPath === "/pedidosFaturados" ? "red" : ""}
+            color={asPath === "/pedidosFaturados" ? "white" : ""}
+          >
+            FATURADOS
+          </Button>
+        </Flex>
+        {/* <Button
+          alignSelf="end"
+          onClick={() => {
+            destroyCookie(userToken as any, CLIENT_TOKEN);
+            Router.push("./");
+            // Router.reload();
+          }}
           variant="ghost"
           _hover={{ bgColor: "#E30613", color: "white" }}
           fontWeight="Regular"
-          onClick={() => {
-            Router.push("/");
-          }}
-          bgColor={asPath === "/" ? "red" : ""}
-          color={asPath === "/" ? "white" : ""}
         >
-          CONFERÊNCIA
-        </Button>
-        <Button
-          variant="ghost"
-          _hover={{ bgColor: "#E30613", color: "white" }}
-          fontWeight="Regular"
-          onClick={() => {
-            Router.push("/pedidosFaturados");
-          }}
-          bgColor={asPath === "/pedidosFaturados" ? "red" : ""}
-          color={asPath === "/pedidosFaturados" ? "white" : ""}
-        >
-          FATURADOS
-        </Button>
-        {/* <Link href={"/"}>
-          <Text>CONFERÊNCIA</Text>
-        </Link> */}
-        {/* <Link href={"/pedidosFaturados"}>
-          <Text>PEDIDOS FATURADOS</Text>
-        </Link> */}
-        {/* <Text>ENDEREÇAMENTO</Text> */}
+          SAIR
+        </Button> */}
       </Flex>
       <Box borderBottomWidth="2px" mt="1rem" w="100%" borderColor="gray.200" />
     </Flex>
