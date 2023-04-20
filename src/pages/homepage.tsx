@@ -9,6 +9,7 @@ import {
   Spinner,
   useBreakpointValue,
   Tooltip,
+  Text,
 } from "@chakra-ui/react";
 
 import HeaderDesk from "../components/header/HeaderDesk";
@@ -22,7 +23,6 @@ import InputWithLabel from "../components/tools/InputWithLabel";
 import ModalConfFinished from "../components/modals/ModalConfFinished";
 import ModalNewOrder from "../components/modals/ModalNewOrder";
 import ModalTags from "../components/modals/ModalTags";
-import LayoutDesk from "../components/Layouts/layoutDesktop";
 
 export default function Scanner() {
   const [barcodeScan, setBarcodeScan] = useState<any>(
@@ -30,12 +30,11 @@ export default function Scanner() {
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [verifyScanner, setVerifyScanner] = useState<boolean>();
-  const [eanError, setEanError] = useState<string>();
   const [qtd, setQtd] = useState<any>();
   const [checked, setChecked] = useState<any>();
   const [itens, setItens] = useState<ItemsTYPE>(null);
+  const [isNotFound, setIsNotFound] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [orderType, setOrderType] = useState<boolean>(false);
   const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
   const [numeroPedido, setNumeroPedido] = useState<string>("");
   const [separador, setSeparador] = useState<string>("");
@@ -45,7 +44,7 @@ export default function Scanner() {
   const [colorBorder, setColorBorder] = useState<boolean>(false);
   const [finishConfLoading, setFinishConfLoading] = useState<boolean>(false);
   const [conferenciaConcluida, setConferenciaConcluida] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   const wideVersion = useBreakpointValue({
     md: false,
@@ -61,11 +60,12 @@ export default function Scanner() {
 
   async function findOrder(order: string) {
     setItens(null as unknown as ItemsTYPE);
+    setIsNotFound(false);
     setLoading(true);
     const result: any = await getSoapData(order);
+
     result !== undefined && setItens(result?.data);
-    result !== undefined &&
-      setOrderType(result?.data?.general?.ordertype === "REDE" ? true : false);
+    result === undefined && setIsNotFound(true);
     setLoading(false);
   }
 
@@ -92,11 +92,6 @@ export default function Scanner() {
     onClose: onClosePrints,
   } = useDisclosure();
 
-  const {
-    isOpen: isOpenTags,
-    onOpen: onOpenTags,
-    onClose: onCloseTags,
-  } = useDisclosure();
   const {
     isOpen: isOpenError,
     onOpen: onOpenError,
@@ -131,6 +126,12 @@ export default function Scanner() {
     const checkEAN = (Mock: any) => Mock.barcode === barcodeScan;
 
     if (itens !== null) {
+      if (barcodeScan.length !== 13) {
+        setErrorMessage(`Formato do código de barras inválido.`);
+        onOpenError();
+        // fetch("http://localhost:5009/ExpeditionScannerAPI");
+        return;
+      }
       const newArrayItens = { ...itens };
       const result = newArrayItens?.orders?.some(checkEAN);
       if (verifyScanner === true && result === true) {
@@ -146,7 +147,6 @@ export default function Scanner() {
                             verifique novamente e tente escanear a quantidade de
                             itens correta.`);
               onOpenError();
-              setEanError(prod?.barcode);
               setQtd(prod?.qty);
               setChecked(prod?.checked + 1);
               setVerifyScanner(false);
@@ -271,7 +271,6 @@ export default function Scanner() {
     resetItens();
     setCurrentDate("");
     setInitialTime("");
-    //acontece
   }
 
   function remaingItens(checkedItens: Order[]) {
@@ -295,6 +294,7 @@ export default function Scanner() {
           zIndex={15}
         >
           <HeaderDesk />
+
           <Flex
             w="100%"
             mt="2rem"
@@ -315,7 +315,6 @@ export default function Scanner() {
                 width={wideVersion ? "200px" : "full"}
                 setValue={setSeparador}
                 text={"SEPARADOR"}
-                // isDisabled={itens !== null ? false : true}
                 borderColor={colorBorder}
               />
               <InputWithLabel
@@ -323,7 +322,6 @@ export default function Scanner() {
                 width={wideVersion ? "200px" : "full"}
                 setValue={setConferente}
                 text={"CONFERENTE"}
-                // isDisabled={itens !== null ? false : true}
                 borderColor={colorBorder}
               />
             </Flex>
@@ -384,7 +382,6 @@ export default function Scanner() {
                 >
                   INICIAR CONFERÊNCIA
                 </Button>
-
                 <Button
                   isDisabled={!verifyScanner ? true : false}
                   w="full"
@@ -466,7 +463,7 @@ export default function Scanner() {
                 isAllChecked={isAllChecked}
                 itens={itens}
                 sendInsertOrders={sendInsertOrders}
-                orderNumbers={numeroPedido}
+                orderNumbers={itens?.general?.orderId}
                 finishConfLoading={finishConfLoading}
                 conferenciaConcluida={conferenciaConcluida}
               />
@@ -478,30 +475,26 @@ export default function Scanner() {
               src="/Image/RS-icon.svg"
               w={"220px"}
               position={"absolute"}
-              // mt={"140px"}
               opacity={loading ? "70%" : "20%"}
-              // display={whenIsLoading}
             />
             <Spinner
               thickness="10px"
               speed="0.65s"
-              // position={"absolute"}
               emptyColor="gray.200"
               color="red.400"
               w="350px"
               h="350px"
-              // mt="150px"
               display={whenIsLoading}
             />
+            {isNotFound && (
+              <Text mt={"18rem"} opacity={"70%"}>
+                Pedido não está disponível para separação ou não existe
+              </Text>
+            )}
           </Flex>
         )}
       </Flex>
-      <ModalTags
-        isOpen={isOpenTags}
-        onClose={onCloseTags}
-        itens={itens}
-        orderNumber={numeroPedido}
-      />
+
       <ModalNewOrder
         isOpen={isOpenNewOrder}
         onClose={onCloseNewOrder}
@@ -510,7 +503,7 @@ export default function Scanner() {
       />
       <ModalComponent
         Title={`Efetuar nova busca`}
-        Phrase={`A conferencia do pedido: ${numeroPedido} não foi concluída, deseja buscar outro pedido?`}
+        Phrase={`A conferencia do pedido: ${itens?.general?.orderId} não foi concluída, deseja buscar outro pedido?`}
         TextButton="BUSCAR"
         bgColor="#005F27"
         func={() => {
@@ -519,17 +512,19 @@ export default function Scanner() {
         }}
         isOpen={isOpenNewSearch}
         onClose={onCloseNewSearch}
+        bgSecundaryColor={"red"}
       />
       <ModalComponent
         Title={"Erro!"}
         Phrase={errorMessage}
         isOpen={isOpenError}
         onClose={onCloseError}
+        bgSecundaryColor={"red"}
       />
       <ModalComponent
         Title="Cancelar Conferencia"
         Phrase={`Deseja cancelar a conferencia do pedido ${itens?.general?.orderId}`}
-        TextButton="CANCELAR"
+        TextButton="CANCELAR CONFERENCIA"
         func={cancelConf}
         isOpen={isOpenCancelConferencia}
         onClose={onCloseCancelConferencia}
