@@ -90,8 +90,6 @@ export default function HomeLogin() {
     async function handleLogin(email: string, password: string) {
         await signInEmailPassword(email, password);
 
-        console.log("isLoading", loading);
-
         if (email == "" || null) {
             setLoading(true);
 

@@ -1,5 +1,4 @@
 import {
-    useDisclosure,
     Button,
     Modal,
     ModalOverlay,
@@ -20,6 +19,7 @@ type ModalComponentType = {
     onClose: any;
     func?: any;
     bgColor?: string;
+    bgSecundaryColor?: string;
 };
 
 export default function ModalDeleteItem({
@@ -30,11 +30,10 @@ export default function ModalDeleteItem({
     onClose,
     func,
     bgColor,
+    bgSecundaryColor,
 }: ModalComponentType) {
     return (
         <>
-            {/* <Button onClick={onOpen}>Open Modal</Button> */}
-
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
@@ -50,7 +49,11 @@ export default function ModalDeleteItem({
                         <Flex justify={"space-between"} w={"100%"}>
                             <Button
                                 textColor={"white"}
-                                bg={"#F9B000"}
+                                bg={
+                                    bgSecundaryColor
+                                        ? bgSecundaryColor
+                                        : "#F9B000"
+                                }
                                 _hover={{ opacity: "80%" }}
                                 onClick={onClose}
                             >

@@ -1,8 +1,8 @@
-import { Flex, Input, Button, useToast } from "@chakra-ui/react";
+import { Flex, Input } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
-import { ItemsTYPE, Order } from "../types/itensType";
+import { Order } from "../types/itensType";
 
 type ChangeConferidoType = {
     index: any;
@@ -36,7 +36,7 @@ export default function ChangeQty({
 
         const teste1 = newCheckedProduct?.map((prod, i) => {
             if (prod?.itemCode === id) {
-                return { ...prod, qty: qtdConferido };
+                return { ...prod, qty: qtdConferido, checked: qtdConferido };
             } else {
                 return prod;
             }
@@ -49,15 +49,12 @@ export default function ChangeQty({
     return (
         <Flex w={"100%"} justify={"start"}>
             <Input
-                // ml={"-10px"}
                 type={"number"}
                 w={"45px"}
                 size={"sm"}
                 value={qtdConferido === 0 ? "" : qtdConferido}
                 border={"none"}
                 borderBottom={".5px solid black"}
-                // borderRadius={"15px"}
-                // bg={"white"}
                 _focusVisible={{ borderBottom: "1px solid black" }}
                 onChange={(e) => setQtdConferido(parseInt(e.target.value))}
             />

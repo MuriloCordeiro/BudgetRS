@@ -1,5 +1,4 @@
 import { api } from "../../services/api";
-import { ItemsTYPE } from "../../types/itensType";
 import { OrderPostObj } from "../../types/orderPostObj";
 
 export async function postSoapData(postOrderObj: OrderPostObj) {

@@ -1,4 +1,4 @@
-import { Flex, Input, Button, useToast, Tooltip } from "@chakra-ui/react";
+import { Flex, Input, useToast, Tooltip } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
@@ -79,8 +79,6 @@ export default function ChangeConferido({
                 align={"center"}
                 justify={"space-evenly"}
                 w={"80px"}
-                // visibility={"hidden"}
-                // display={isVisible ? "flex" : "none"}
                 gap={"10px"}
             >
                 <BsCheck
