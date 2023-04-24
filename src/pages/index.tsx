@@ -54,6 +54,12 @@ export default function HomeLogin() {
     signInEmailPasswordWebservices(email, password);
   }
 
+  function HandleKeyPress(e: any) {
+    if (e?.key === "Enter") {
+      signInEmailPasswordWebservices(email, password);
+    }
+  }
+
   useEffect(() => {
     if (isLoged && isLoged !== null) {
       Toast.closeAll();
@@ -70,6 +76,7 @@ export default function HomeLogin() {
       });
       setIsLoged(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoged]);
 
   return (
@@ -149,6 +156,9 @@ export default function HomeLogin() {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              onKeyDown={(event) => {
+                HandleKeyPress(event);
+              }}
             />
           </InputMotion>
           <InputMotion
@@ -164,6 +174,9 @@ export default function HomeLogin() {
               <BsShieldLock opacity="45%" />
             </InputLeftElement>
             <Input
+              onKeyDown={(event) => {
+                HandleKeyPress(event);
+              }}
               type="password"
               opacity="70%"
               borderColor="gray.300"
