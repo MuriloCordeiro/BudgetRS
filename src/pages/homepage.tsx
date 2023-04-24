@@ -129,7 +129,7 @@ export default function Scanner() {
       if (barcodeScan.length !== 13) {
         setErrorMessage(`Formato do código de barras inválido.`);
         onOpenError();
-        // fetch("http://localhost:5009/ExpeditionScannerAPI");
+        fetch("http://localhost:5009/ExpeditionScannerAPI");
         return;
       }
       const newArrayItens = { ...itens };

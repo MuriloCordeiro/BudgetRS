@@ -68,7 +68,7 @@ export default function HeaderDesk() {
             FATURADOS
           </Button>
         </Flex>
-        {/* <Button
+        <Button
           alignSelf="end"
           onClick={() => {
             destroyCookie(userToken as any, CLIENT_TOKEN);
@@ -80,7 +80,7 @@ export default function HeaderDesk() {
           fontWeight="Regular"
         >
           SAIR
-        </Button> */}
+        </Button>
       </Flex>
       <Box borderBottomWidth="2px" mt="1rem" w="100%" borderColor="gray.200" />
     </Flex>

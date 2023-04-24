@@ -18,6 +18,8 @@ import { useRouter } from "next/router";
 type AuthContextData = {
   signInEmailPasswordWebservices: any;
   isLoading: boolean | undefined;
+  isLoged: boolean | null;
+  setIsLoged: any;
 };
 
 type AuthProviderProps = {
@@ -29,6 +31,7 @@ const AuthContext = createContext({} as AuthContextData);
 export function AuthProvider({ children }: AuthProviderProps) {
   const Router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoged, setIsLoged] = useState<boolean | null>(null);
   const CLIENT_TOKEN: any = process.env.NEXT_PUBLIC_CLIENT_TOKEN;
   const COOKIE_MAX_AGE: any = process.env.NEXT_PUBLIC_CLIENT_MAX_AGE;
   const cookies = parseCookies();
@@ -41,6 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       const response = await ValidateAuth(email, password);
+      setIsLoged(response?.data?.authenticated);
       const isAuthenticated = response && response.data.authenticated;
       await handleSessionCookie(isAuthenticated);
       setIsLoading(false);
@@ -73,6 +77,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       value={{
         signInEmailPasswordWebservices,
         isLoading,
+        isLoged,
+        setIsLoged,
       }}
     >
       {children}

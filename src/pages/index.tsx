@@ -2,42 +2,22 @@ import {
   Flex,
   Button,
   Text,
-  useBreakpointValue,
   Input,
-  InputGroup,
-  InputLeftAddon,
   InputLeftElement,
-  InputRightElement,
-  Stack,
   Image,
   useToast,
-  useDisclosure,
-  Toast,
-  IconButton,
-  Icon,
-  Box,
-  Img,
 } from "@chakra-ui/react";
 import LayoutDesk from "../components/Layouts/layoutDesktop";
-// import Lottie from "react-lottie";
 import animationData from "../animations/login.json";
 import { useAuth } from "../contexts/AuthContext";
 import { AiOutlineUser, AiOutlineEyeInvisible } from "react-icons/ai";
 import { BsShieldLock } from "react-icons/bs";
-import { FcGoogle } from "react-icons/fc";
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  User,
-} from "firebase/auth";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 
 import { destroyCookie, parseCookies } from "nookies";
-import Router, { useRouter } from "next/router";
 import {
   MotionFlex,
-  animationFlex,
   itemAnimation,
   InputMotion,
   inputAnimation,
@@ -58,7 +38,8 @@ export default function HomeLogin() {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  const { signInEmailPasswordWebservices, isLoading } = useAuth();
+  const { signInEmailPasswordWebservices, isLoading, isLoged, setIsLoged } =
+    useAuth();
 
   const Toast = useToast({
     position: "bottom",
@@ -72,6 +53,31 @@ export default function HomeLogin() {
   function handleLogin() {
     signInEmailPasswordWebservices(email, password);
   }
+
+  function HandleKeyPress(e: any) {
+    if (e?.key === "Enter") {
+      signInEmailPasswordWebservices(email, password);
+    }
+  }
+
+  useEffect(() => {
+    if (isLoged && isLoged !== null) {
+      Toast.closeAll();
+      Toast({
+        title: "Logado com sucesso",
+        status: "success",
+      });
+      setIsLoged(null);
+    } else if (!isLoged && isLoged !== null) {
+      Toast.closeAll();
+      Toast({
+        title: "Email ou senha incorretas",
+        status: "error",
+      });
+      setIsLoged(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoged]);
 
   return (
     <>
@@ -150,6 +156,9 @@ export default function HomeLogin() {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              onKeyDown={(event) => {
+                HandleKeyPress(event);
+              }}
             />
           </InputMotion>
           <InputMotion
@@ -165,6 +174,9 @@ export default function HomeLogin() {
               <BsShieldLock opacity="45%" />
             </InputLeftElement>
             <Input
+              onKeyDown={(event) => {
+                HandleKeyPress(event);
+              }}
               type="password"
               opacity="70%"
               borderColor="gray.300"
