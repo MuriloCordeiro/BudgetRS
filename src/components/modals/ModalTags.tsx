@@ -44,6 +44,7 @@ export default function ModalTags({
 
   useEffect(() => {
     checkeds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allCheckedsNumber]);
 
   function checkeds() {
