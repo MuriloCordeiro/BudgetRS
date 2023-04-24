@@ -5,13 +5,12 @@ import { defaultTheme } from "../styles/theme.ts";
 import { AuthProvider } from "../contexts/AuthContext";
 
 export default function App({ Component, pageProps }: AppProps) {
-    return (
-        <ChakraProvider theme={defaultTheme} resetCSS cssVarsRoot="body">
-            <AuthProvider>
-                <title>SERS - Sistema de Expedição RS</title>
-
-                <Component {...pageProps} />
-            </AuthProvider>
-        </ChakraProvider>
-    );
+  return (
+    <ChakraProvider theme={defaultTheme} resetCSS cssVarsRoot="body">
+      <AuthProvider>
+        <title>SERS - Sistema de Expedição RS</title>
+        <Component {...pageProps} />
+      </AuthProvider>
+    </ChakraProvider>
+  );
 }

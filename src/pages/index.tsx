@@ -17,6 +17,7 @@ import {
   Icon,
   Box,
   Img,
+  Tooltip,
 } from "@chakra-ui/react";
 import LayoutDesk from "../components/Layouts/layoutDesktop";
 // import Lottie from "react-lottie";
@@ -31,7 +32,7 @@ import {
   createUserWithEmailAndPassword,
   User,
 } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { destroyCookie, parseCookies } from "nookies";
 import Router, { useRouter } from "next/router";
@@ -47,8 +48,8 @@ export default function HomeLogin() {
     duration: 5000,
     isClosable: true,
   });
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<any>("");
+  const [password, setPassword] = useState<any>("");
 
   const defaultOptions = {
     loop: true,
@@ -63,15 +64,28 @@ export default function HomeLogin() {
   const Toast = useToast({
     position: "bottom",
     isClosable: true,
-    duration: 2500,
+    duration: 1500,
     containerStyle: {
       color: "white",
     },
   });
 
-  function handleLogin() {
-    signInEmailPasswordWebservices(email, password);
+  async function handleLogin() {
+    await signInEmailPasswordWebservices(email, password);
+    // handleToast();
   }
+  // function handleToast() {
+  //   Toast({
+  //     title: onError === true ? "Usuário não existe" : "Você logou!.",
+  //     description:
+  //       onError === true
+  //         ? "Tente entrar com outra conta"
+  //         : "Seja bem vindo ao SERS.",
+  //     status: onError === true ? "error" : "success",
+  //     duration: 9000,
+  //     isClosable: true,
+  //   });
+  // }
 
   return (
     <>
@@ -106,6 +120,11 @@ export default function HomeLogin() {
             align="center"
             w="full"
           >
+            {/* <Button
+              onClick={() => {
+                teste();
+              }}
+            ></Button> */}
             <Flex justify="center">
               <Image alt="Logo da RS" src={"/Image/RS-icon.svg"} w="120x" />
               <Text fontSize={"70px"} fontWeight="Bold">
@@ -177,21 +196,33 @@ export default function HomeLogin() {
               }}
             />
           </InputMotion>
-
-          <Button
-            w="10rem"
-            boxShadow="lg"
-            isLoading={isLoading}
-            borderWidth="1px"
-            mt="2rem"
-            h="40px"
-            colorScheme="green"
-            onClick={() => {
-              handleLogin();
-            }}
-          >
-            Entrar
-          </Button>
+          <>
+            <Tooltip
+              display={
+                password.length >= 3 && email.length >= 3 ? "none" : "flex"
+              }
+              label="Todos os campos devem ser preenchidos"
+              aria-label="A tooltip"
+            >
+              <Button
+                w="10rem"
+                boxShadow="lg"
+                isLoading={isLoading}
+                borderWidth="1px"
+                mt="2rem"
+                h="40px"
+                colorScheme="green"
+                onClick={() => {
+                  handleLogin();
+                }}
+                isDisabled={
+                  password.length >= 3 && email.length >= 3 ? false : true
+                }
+              >
+                Entrar
+              </Button>
+            </Tooltip>
+          </>
         </MotionFlex>
       </Flex>
     </>

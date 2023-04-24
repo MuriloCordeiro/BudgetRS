@@ -29,6 +29,7 @@ const AuthContext = createContext({} as AuthContextData);
 export function AuthProvider({ children }: AuthProviderProps) {
   const Router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>();
+
   const CLIENT_TOKEN: any = process.env.NEXT_PUBLIC_CLIENT_TOKEN;
   const COOKIE_MAX_AGE: any = process.env.NEXT_PUBLIC_CLIENT_MAX_AGE;
   const cookies = parseCookies();
@@ -44,8 +45,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const isAuthenticated = response && response.data.authenticated;
       await handleSessionCookie(isAuthenticated);
       setIsLoading(false);
-    } catch {
-      console.error("error");
+    } catch (err) {
+      console.error("error", err);
     }
   }
 
