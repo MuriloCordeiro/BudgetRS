@@ -306,7 +306,7 @@ export default function ModalConfFinished({
                                         _hover={{ opacity: "70%" }}
                                         onClick={() => onOpenTags()}
                                     >
-                                        IMPRIMIR ETIQUETAS
+                                        IMPRIMIR ETIQUETA
                                     </Button>
                                 </Tooltip>
                                 <Tooltip
