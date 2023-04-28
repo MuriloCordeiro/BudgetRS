@@ -142,13 +142,13 @@ export default function Scanner() {
               prod?.barcode === barcodeScan &&
               prod?.checked + 1 > prod?.qty
             ) {
-              setErrorMessage(`Você escaneou ${checked} itens, porém a
-                            quantidade correta é ${qtd}. Por favor,
-                            verifique novamente e tente escanear a quantidade de
-                            itens correta.`);
+              setErrorMessage(`Você escaneou ${prod?.checked + 1} itens, porém a
+              quantidade correta é ${prod?.qty}. Por favor,
+              verifique novamente e tente escanear a quantidade de
+              itens correta.`);
+              setChecked(prod?.checked + 1);
               onOpenError();
               setQtd(prod?.qty);
-              setChecked(prod?.checked + 1);
               setVerifyScanner(false);
               fetch("http://localhost:5009/ExpeditionScannerAPI");
 
