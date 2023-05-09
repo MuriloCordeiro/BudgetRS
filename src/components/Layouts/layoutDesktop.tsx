@@ -2,12 +2,16 @@ import { Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "next/router";
+import HeaderDesk from "../header/HeaderDesk";
 
 export default function LayoutDesk(props: any) {
   return (
     <>
-      <Flex px="2rem" mt="0.3rem" direction="column">
+      <Flex bgColor="#EBEBEB" h="100vh" p="1rem">
+        {/* <HeaderDesk /> */}
+
         {/* <Header /> */}
+
         {props.children}
         {/* <NavBar /> */}
       </Flex>

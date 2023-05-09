@@ -113,13 +113,7 @@ export default function HomeLogin() {
             w="full"
           >
             <Flex justify="center">
-              <Image alt="Logo da RS" src={"/Image/RS-icon.svg"} w="120x" />
-              <Text fontSize={"70px"} fontWeight="Bold">
-                SE
-              </Text>
-              <Text fontSize={"70px"} textColor={"#E30613"} fontWeight="Bold">
-                RS
-              </Text>
+              <Image alt="Logo da RS" src={"/Image/RS-icon.svg"} w="full" />
             </Flex>
             <Text fontSize="18px" fontWeight="bold" align="center" mb="1rem">
               Seja bem-vindo

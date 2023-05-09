@@ -8,7 +8,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={defaultTheme} resetCSS cssVarsRoot="body">
       <AuthProvider>
-        <title>SERS - Sistema de Expedição RS</title>
+        <title>Sistema de Orçamento RS</title>
         <Component {...pageProps} />
       </AuthProvider>
     </ChakraProvider>
